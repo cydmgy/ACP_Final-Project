@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="home-container">
+    <div class="stats-header">
+        <div class="stat-card">
+            <h3>Total Clicks</h3>
+            <div class="stat-value" id="click-counter">{{ clicks }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Coins</h3>
+            <div class="stat-value" id="coin-counter">{{ coins }}</div>
+        </div>
+        <div class="stat-card" id="pulls-stat-card">
+            <h3>Available Pulls</h3>
+            <div class="stat-value" id="pull-counter">{{ coins // 20 }}</div>
+        </div>
+    </div>
+
+    ---
+
+    <div class="click-area">
+        <h2>Click to Earn Coins!</h2>
+        <button id="click-button" class="ocean-button">Click here</button>
+        <p>Every 20 clicks gives 1 coin!</p>
+    </div>
+
+    ---
+
+    <div class="missions-panel">
+        <h2>Missions</h2>
+        <div class="missions-list">
+            {% for mission in missions %}
+            <div class="mission-item {% if mission.id in completed_missions %}completed{% endif %}">
+                <div class="mission-info">
+                    <h4>{{ mission.name }}</h4>
+                    <p>{{ mission.description }}</p>
+                </div>
+                <div class="mission-reward">
+                    <span class="reward-amount">+{{ mission.reward }} coins</span>
+                    {% if mission.id in completed_missions %}
+                    <span class="completed-badge">✓ Completed</span>
+                    {% else %}
+                    <div class="progress">
+                        <div class="progress-bar" style="width: {{ (clicks / mission.target * 100) if mission.target > 0 else 0 }}%"></div>
+                        <span class="progress-text">{{ clicks }}/{{ mission.target }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    console.log("Document ready - click script loaded");
+    
+    $('#click-button').click(function() {
+        console.log("Click button clicked");
+        
+        // Send click to server
+        $.post('/click', function(data) {
+            console.log("Server response:", data);
+            
+            // 1. Update Clicks and Coins
+            $('#click-counter').text(data.clicks);
+            $('#coin-counter').text(data.coins);
+            
+            // 2. Update Available Pulls (Crucial fix: Dynamically calculate/update this)
+            $('#pull-counter').text(Math.floor(data.coins / 20));
+
+            // 3. Handle Mission Completion
+            if (data.coins_earned > 0) {
+                // Alert the user and perform a full page reload to update 
+                // the mission progress bars and completion badges correctly.
+                // A full reload is kept here as client-side mission updates 
+                // would require more complex JavaScript logic.
+                alert('Mission Complete! +' + data.coins_earned + ' coins!');
+                location.reload(); 
+            }
+        }).fail(function(xhr, status, error) {
+            console.error("Error:", error);
+            alert('Error clicking: ' + error);
+        });
+    });
+});
+</script>
+{% endblock %}

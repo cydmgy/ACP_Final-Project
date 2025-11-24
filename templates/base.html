@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Sea Life Gacha</title>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <h2>Sea Life Gacha</h2>
+            <ul>
+                <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('gacha') }}" class="{% if request.endpoint == 'gacha' %}active{% endif %}">Gacha</a></li>
+                <li><a href="{{ url_for('inventory') }}" class="{% if request.endpoint == 'inventory' %}active{% endif %}">Inventory</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="gacha-container">
+    <h2>Gacha Section</h2>
+    <div class="coins-display">
+        <h3>Your Coins: <span id="gacha-coins">{{ coins }}</span></h3>
+    </div>
+    <div class="gacha-info">
+        <p>1x Pull: 20 coins</p>
+        <p>10x Pull: 200 coins</p>
+    </div>
+    <div class="gacha-pull">
+        <button id="pull-single" class="gacha-button">1x Pull</button>
+        <button id="pull-multi" class="gacha-button">10x Pull</button>
+        <div id="gacha-result"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    console.log("Gacha page loaded");
+    
+    $('#pull-single').click(function() {
+        console.log("Single pull clicked");
+        
+        $.ajax({
+            url: '/pull_gacha',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({type: 'single'}),
+            success: function(data) {
+                console.log("Single pull success:", data);
+                if (data.success) {
+                    $('#gacha-coins').text(data.coins);
+                    const creature = data.creature;
+                    $('#gacha-result').html(`
+                        <div class="gacha-result-card">
+                            <h3>You got a ${creature.name}!</h3>
+                            <p>Rarity: ${creature.rarity}</p>
+                            <p>Added to your inventory!</p>
+                        </div>
+                    `);
+                } else {
+                    $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Single pull error:", error);
+                $('#gacha-result').html(`<div class="error-message">Error: ${error}</div>`);
+            }
+        });
+    });
+
+    $('#pull-multi').click(function() {
+        console.log("Multi pull clicked");
+        
+        $.ajax({
+            url: '/pull_gacha',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({type: 'multi'}),
+            success: function(data) {
+                console.log("Multi pull success:", data);
+                if (data.success) {
+                    $('#gacha-coins').text(data.coins);
+                    let resultHtml = '<div class="multi-result"><h3>10x Pull Results:</h3><div class="creatures-grid">';
+                    data.creatures.forEach(creature => {
+                        resultHtml += `
+                            <div class="creature-mini-card">
+                                <h4>${creature.name}</h4>
+                                <p>${creature.rarity}</p>
+                            </div>
+                        `;
+                    });
+                    resultHtml += '</div></div>';
+                    $('#gacha-result').html(resultHtml);
+                } else {
+                    $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Multi pull error:", error);
+                $('#gacha-result').html(`<div class="error-message">Error: ${error}</div>`);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

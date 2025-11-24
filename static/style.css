@@ -1,0 +1,63 @@
+styles.css
+#click-button {
+    cursor: pointer;
+    padding: 10px 20px;
+    background: #2196f3;
+    color: white;
+    border-radius: 5px;
+    display: inline-block;
+}
+
+/* Basic styles for gacha results */
+.gacha-result-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    border: 2px solid #4fc3f7;
+}
+
+.error-message {
+    background: rgba(255, 0, 0, 0.2);
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 10px;
+    border: 2px solid red;
+    color: #ff6b6b;
+}
+
+.multi-result {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+}
+
+.creatures-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.creature-mini-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.gacha-button {
+    padding: 15px 30px;
+    margin: 10px;
+    font-size: 16px;
+    background: #4fc3f7;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.gacha-button:hover {
+    background: #29b6f6;
+}

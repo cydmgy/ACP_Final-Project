@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-container">
+    <h2>Manage Marine Creatures</h2>
+    
+    <div class="admin-actions">
+        <button id="add-creature-btn" class="btn btn-primary">Add New Creature</button>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Rarity</th>
+                <th>Probability</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for creature in creatures %}
+            <tr data-creature-id="{{ creature.id }}">
+                <td>{{ creature.name }}</td>
+                <td><span class="rarity {{ creature.rarity }}">{{ creature.rarity|title }}</span></td>
+                <td>{{ "%.2f"|format(creature.probability * 100) }}%</td>
+                <td class="status-cell">{{ 'Active' if creature.is_active else 'Inactive' }}</td>
+                <td>
+                    <button class="btn btn-edit edit-creature-btn" data-id="{{ creature.id }}">Edit</button>
+                    <button class="btn toggle-creature-btn 
+                                 {% if not creature.is_active %}btn-activate{% else %}btn-deactivate{% endif %}" 
+                            data-id="{{ creature.id }}" 
+                            data-activate="{% if not creature.is_active %}true{% else %}false{% endif %}">
+                        {% if not creature.is_active %}Activate{% else %}Deactivate{% endif %}
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add new creature
+    document.getElementById('add-creature-btn').addEventListener('click', function() {
+        alert('Add new creature functionality would go here');
+    });
+
+    // Edit creature
+    document.querySelectorAll('.edit-creature-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const creatureId = this.getAttribute('data-id');
+            alert('Edit creature ' + creatureId + ' functionality would go here');
+        });
+    });
+
+    // Toggle creature status
+    document.querySelectorAll('.toggle-creature-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const creatureId = this.getAttribute('data-id');
+            const activate = this.getAttribute('data-activate') === 'true';
+            
+            if (confirm('Are you sure you want to ' + (activate ? 'activate' : 'deactivate') + ' this creature?')) {
+                fetch('/admin/creature/' + creatureId + '/toggle', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({activate: activate})
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          location.reload();
+                      } else {
+                          alert('Error: ' + data.message);
+                      }
+                  }).catch(error => {
+                      alert('Error: ' + error);
+                  });
+            }
+        });
+    });
+});
+</script>
+
+<style>
+.admin-container {
+    padding: 20px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.admin-table th, .admin-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 2px;
+    font-size: 14px;
+}
+
+.btn-primary { 
+    background-color: #007bff; 
+    color: white; 
+}
+
+.btn-edit { 
+    background-color: #ffc107; 
+    color: black; 
+}
+
+.btn-activate { 
+    background-color: #28a745; 
+    color: white; 
+}
+
+.btn-deactivate { 
+    background-color: #dc3545; 
+    color: white; 
+}
+
+.rarity.common { color: #6c757d; font-weight: bold; }
+.rarity.rare { color: #007bff; font-weight: bold; }
+.rarity.epic { color: #6f42c1; font-weight: bold; }
+.rarity.legendary { color: #e83e8c; font-weight: bold; }
+
+.admin-actions {
+    margin-bottom: 20px;
+}
+</style>
