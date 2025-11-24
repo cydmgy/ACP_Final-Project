@@ -5,9 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Sea Life Gacha</title>
+    <style>
+        /* Add basic layout styles if missing from style.css */
+        body { font-family: sans-serif; margin: 0; background: #f0f8ff; }
+        .container { display: flex; min-height: 100vh; }
+        
+        /* Sidebar styling */
+        .sidebar { 
+            width: 250px; 
+            background: #ffffff; 
+            padding: 20px; 
+            border-right: 1px solid #dee2e6;
+            flex-shrink: 0;
+        }
+        
+        /* Layout for Auth page (Centered, no sidebar) */
+        .container.auth-mode {
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%);
+        }
+        
+        .main-content { flex-grow: 1; padding: 20px; }
+        
+        /* Nav styling */
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar li { margin-bottom: 10px; }
+        .sidebar a { text-decoration: none; color: #333; font-weight: bold; display: block; padding: 10px; border-radius: 5px; }
+        .sidebar a:hover, .sidebar a.active { background: #e1f5fe; color: #0288d1; }
+        
+        /* Flash messages */
+        .alert { padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
 </head>
 <body>
-    <div class="container">
+    <div class="container {% if request.endpoint == 'auth' %}auth-mode{% endif %}">
+        
+        {% if request.endpoint != 'auth' %}
         <div class="sidebar">
             <h2>Sea Life Gacha</h2>
             <ul>
@@ -15,18 +51,17 @@
                     <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
                     <li><a href="{{ url_for('gacha') }}" class="{% if request.endpoint == 'gacha' %}active{% endif %}">Gacha</a></li>
                     <li><a href="{{ url_for('inventory') }}" class="{% if request.endpoint == 'inventory' %}active{% endif %}">Inventory</a></li>
-                {% else %}
-                    <li><a href="{{ url_for('auth') }}" class="active">Login / Register</a></li>
                 {% endif %}
             </ul>
         </div>
+        {% endif %}
 
         <div class="main-content">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <div class="messages">
                         {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}" style="padding: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.1); border-left: 4px solid #2196f3;">
+                            <div class="alert alert-{{ category }}">
                                 {{ message }}
                             </div>
                         {% endfor %}
@@ -37,6 +72,7 @@
             {% block content %}{% endblock %}
         </div>
     </div>
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% block scripts %}{% endblock %}
 </body>
