@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container" style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+    
+    <div id="login-section">
+        <h2>Log In</h2>
+        <form action="{{ url_for('login') }}" method="POST">
+            <div style="margin-bottom: 10px;">
+                <input type="text" name="username" placeholder="Username" required style="width: 100%; padding: 8px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <input type="password" name="password" placeholder="Password" required style="width: 100%; padding: 8px;">
+            </div>
+            <button type="submit" class="ocean-button" style="width: 100%;">Log In</button>
+        </form>
+        <p style="margin-top: 15px;">
+            <a href="#" onclick="showSection('forgot-section')">Forgot Password?</a><br>
+            Don't have an account? <a href="#" onclick="showSection('register-section')">Create Account</a>
+        </p>
+    </div>
+
+    <div id="register-section" style="display: none;">
+        <h2>Create Account</h2>
+        <form action="{{ url_for('register') }}" method="POST">
+            <div style="margin-bottom: 10px;">
+                <input type="text" name="username" placeholder="Choose Username" required style="width: 100%; padding: 8px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <input type="password" name="password" placeholder="Choose Password" required style="width: 100%; padding: 8px;">
+            </div>
+            <button type="submit" class="ocean-button" style="width: 100%;">Create Account</button>
+        </form>
+        <p style="margin-top: 15px;">
+            Already have an account? <a href="#" onclick="showSection('login-section')">Log In</a>
+        </p>
+    </div>
+
+    <div id="forgot-section" style="display: none;">
+        <h2>Reset Password</h2>
+        <p>Enter your username and new password.</p>
+        <form action="{{ url_for('forgot_password') }}" method="POST">
+            <div style="margin-bottom: 10px;">
+                <input type="text" name="username" placeholder="Username" required style="width: 100%; padding: 8px;">
+            </div>
+            <div style="margin-bottom: 10px;">
+                <input type="password" name="new_password" placeholder="New Password" required style="width: 100%; padding: 8px;">
+            </div>
+            <button type="submit" class="ocean-button" style="width: 100%;">Update Password</button>
+        </form>
+        <p style="margin-top: 15px;">
+            <a href="#" onclick="showSection('login-section')">Back to Login</a>
+        </p>
+    </div>
+
+</div>
+
+<script>
+    function showSection(sectionId) {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('register-section').style.display = 'none';
+        document.getElementById('forgot-section').style.display = 'none';
+        
+        document.getElementById(sectionId).style.display = 'block';
+    }
+</script>
+{% endblock %}

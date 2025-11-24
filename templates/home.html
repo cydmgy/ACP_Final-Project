@@ -4,6 +4,11 @@
 <div class="home-container">
     <div class="stats-header">
         <div class="stat-card">
+            <h3>Player</h3>
+            <div class="stat-value" style="font-size: 1.2rem;">{{ username }}</div>
+            <a href="{{ url_for('logout') }}" style="font-size: 0.8rem; color: #ff6b6b;">Log Out</a>
+        </div>
+        <div class="stat-card">
             <h3>Total Clicks</h3>
             <div class="stat-value" id="click-counter">{{ clicks }}</div>
         </div>
@@ -17,15 +22,15 @@
         </div>
     </div>
 
-    ---
+    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
 
     <div class="click-area">
         <h2>Click to Earn Coins!</h2>
         <button id="click-button" class="ocean-button">Click here</button>
-        <p>Every 20 clicks gives 1 coin!</p>
+        <p>Every 5 clicks gives 1 coin!</p>
     </div>
 
-    ---
+    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
 
     <div class="missions-panel">
         <h2>Missions</h2>
@@ -60,31 +65,24 @@ $(document).ready(function() {
     console.log("Document ready - click script loaded");
     
     $('#click-button').click(function() {
-        console.log("Click button clicked");
-        
-        // Send click to server
         $.post('/click', function(data) {
-            console.log("Server response:", data);
-            
-            // 1. Update Clicks and Coins
+            // Update Clicks and Coins
             $('#click-counter').text(data.clicks);
             $('#coin-counter').text(data.coins);
-            
-            // 2. Update Available Pulls (Crucial fix: Dynamically calculate/update this)
             $('#pull-counter').text(Math.floor(data.coins / 20));
 
-            // 3. Handle Mission Completion
+            // Handle Mission Completion
             if (data.coins_earned > 0) {
-                // Alert the user and perform a full page reload to update 
-                // the mission progress bars and completion badges correctly.
-                // A full reload is kept here as client-side mission updates 
-                // would require more complex JavaScript logic.
                 alert('Mission Complete! +' + data.coins_earned + ' coins!');
                 location.reload(); 
             }
         }).fail(function(xhr, status, error) {
-            console.error("Error:", error);
-            alert('Error clicking: ' + error);
+            // If session expired (401 Unauthorized), redirect to auth
+            if (xhr.status === 401) {
+                window.location.href = "{{ url_for('auth') }}";
+            } else {
+                console.error("Error:", error);
+            }
         });
     });
 });

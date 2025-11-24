@@ -8,21 +8,36 @@
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar Navigation -->
         <div class="sidebar">
             <h2>Sea Life Gacha</h2>
             <ul>
-                <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
-                <li><a href="{{ url_for('gacha') }}" class="{% if request.endpoint == 'gacha' %}active{% endif %}">Gacha</a></li>
-                <li><a href="{{ url_for('inventory') }}" class="{% if request.endpoint == 'inventory' %}active{% endif %}">Inventory</a></li>
+                {% if session.get('user_id') %}
+                    <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
+                    <li><a href="{{ url_for('gacha') }}" class="{% if request.endpoint == 'gacha' %}active{% endif %}">Gacha</a></li>
+                    <li><a href="{{ url_for('inventory') }}" class="{% if request.endpoint == 'inventory' %}active{% endif %}">Inventory</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('auth') }}" class="active">Login / Register</a></li>
+                {% endif %}
             </ul>
         </div>
 
-        <!-- Main Content -->
         <div class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="messages">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" style="padding: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.1); border-left: 4px solid #2196f3;">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
             {% block content %}{% endblock %}
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     {% block scripts %}{% endblock %}
 </body>
+</html>
