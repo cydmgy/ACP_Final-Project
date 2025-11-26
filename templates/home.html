@@ -43,7 +43,7 @@
                 </div>
                 <div class="mission-reward">
                     <span class="reward-amount">+{{ mission.reward }} coins</span>
-                    {% if mission.id in completed_missions %}
+                    {% if mission.mission_id in completed_missions %}
                     <span class="completed-badge">✓ Completed</span>
                     {% else %}
                     <div class="progress">

@@ -1,4 +1,3 @@
-styles.css
 #click-button {
     cursor: pointer;
     padding: 10px 20px;
@@ -60,4 +59,73 @@ styles.css
 
 .gacha-button:hover {
     background: #29b6f6;
+}
+
+/* Example CSS you would add */
+.creatures-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+.creature-card {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    width: 150px; /* Adjust size */
+}
+.creature-image-gacha img {
+    max-width: 100%;
+    height: auto;
+}
+.creature-card.mini {
+    width: 80px; /* Smaller size for multi-pulls */
+}
+
+.admin-container {
+    padding: 20px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.admin-table th, .admin-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.admin-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 2px;
+    font-size: 14px;
+    text-decoration: none; 
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-primary { 
+    background-color: #007bff; 
+    color: white; 
+}
+
+.btn-edit { 
+    background-color: #ffc107; 
+    color: #212529;
+}
+
+.btn-delete { 
+    background-color: #dc3545; 
+    color: white; 
 }

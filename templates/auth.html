@@ -6,13 +6,14 @@
     <div id="login-section">
         <h2>Log In</h2>
         <form action="{{ url_for('login') }}" method="POST">
+            {{ login_form.hidden_tag() }} <!-- Security Token -->
             <div style="margin-bottom: 10px;">
-                <input type="text" name="username" placeholder="Username" required style="width: 100%; padding: 8px;">
+                {{ login_form.username(placeholder="Username", style="width: 100%; padding: 8px;", autocomplete="off") }}
             </div>
             <div style="margin-bottom: 10px;">
-                <input type="password" name="password" placeholder="Password" required style="width: 100%; padding: 8px;">
+                {{ login_form.password(placeholder="Password", style="width: 100%; padding: 8px;", autocomplete="off") }}
             </div>
-            <button type="submit" class="ocean-button" style="width: 100%;">Log In</button>
+            {{ login_form.submit(class="ocean-button", style="width: 100%;") }}
         </form>
         <p style="margin-top: 15px;">
             <a href="#" onclick="showSection('forgot-section')">Forgot Password?</a><br>
@@ -23,13 +24,14 @@
     <div id="register-section" style="display: none;">
         <h2>Create Account</h2>
         <form action="{{ url_for('register') }}" method="POST">
+            {{ register_form.hidden_tag() }}
             <div style="margin-bottom: 10px;">
-                <input type="text" name="username" placeholder="Choose Username" required style="width: 100%; padding: 8px;">
+                {{ register_form.username(placeholder="Choose Username", style="width: 100%; padding: 8px;", autocomplete="off") }}
             </div>
             <div style="margin-bottom: 10px;">
-                <input type="password" name="password" placeholder="Choose Password" required style="width: 100%; padding: 8px;">
+                {{ register_form.password(placeholder="Choose Password", style="width: 100%; padding: 8px;", autocomplete="off") }}
             </div>
-            <button type="submit" class="ocean-button" style="width: 100%;">Create Account</button>
+            {{ register_form.submit(class="ocean-button", style="width: 100%;") }}
         </form>
         <p style="margin-top: 15px;">
             Already have an account? <a href="#" onclick="showSection('login-section')">Log In</a>
@@ -38,21 +40,20 @@
 
     <div id="forgot-section" style="display: none;">
         <h2>Reset Password</h2>
-        <p>Enter your username and new password.</p>
         <form action="{{ url_for('forgot_password') }}" method="POST">
+            {{ forgot_form.hidden_tag() }}
             <div style="margin-bottom: 10px;">
-                <input type="text" name="username" placeholder="Username" required style="width: 100%; padding: 8px;">
+                {{ forgot_form.username(placeholder="Username", style="width: 100%; padding: 8px;", autocomplete="off") }}
             </div>
             <div style="margin-bottom: 10px;">
-                <input type="password" name="new_password" placeholder="New Password" required style="width: 100%; padding: 8px;">
+                {{ forgot_form.new_password(placeholder="New Password", style="width: 100%; padding: 8px;", autocomplete="off") }}
             </div>
-            <button type="submit" class="ocean-button" style="width: 100%;">Update Password</button>
+            {{ forgot_form.submit(class="ocean-button", style="width: 100%;") }}
         </form>
         <p style="margin-top: 15px;">
             <a href="#" onclick="showSection('login-section')">Back to Login</a>
         </p>
     </div>
-
 </div>
 
 <script>
@@ -60,8 +61,11 @@
         document.getElementById('login-section').style.display = 'none';
         document.getElementById('register-section').style.display = 'none';
         document.getElementById('forgot-section').style.display = 'none';
-        
         document.getElementById(sectionId).style.display = 'block';
     }
+    document.addEventListener('DOMContentLoaded', function() {
+        const initialSection = '{{ initial_section }}';     
+        showSection(initialSection + '-section');
+    });
 </script>
 {% endblock %}

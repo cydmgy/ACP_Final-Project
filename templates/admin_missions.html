@@ -5,7 +5,7 @@
     <h2>Manage Missions</h2>
     
     <div class="admin-actions">
-        <button id="add-mission-btn" class="btn btn-primary">Add New Mission</button>
+        <a href="{{ url_for('new_mission') }}" class="btn btn-primary">Add New Mission</a>
     </div>
 
     <table class="admin-table">
@@ -16,131 +16,33 @@
                 <th>Target</th>
                 <th>Reward</th>
                 <th>Order</th>
-                <th>Status</th>
+                {# REMOVED: <th>Active</th> #}
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for mission in missions %}
-            <tr data-mission-id="{{ mission.id }}">
+            <tr data-mission-id="{{ mission.mission_id }}">
                 <td>{{ mission.name }}</td>
                 <td>{{ mission.description }}</td>
                 <td>{{ mission.target }}</td>
                 <td>{{ mission.reward }} coins</td>
                 <td>{{ mission.order }}</td>
-                <td class="status-cell">{{ 'Active' if mission.is_active else 'Inactive' }}</td>
                 <td>
-                    <button class="btn btn-edit edit-mission-btn" data-id="{{ mission.id }}">Edit</button>
-                    <button class="btn toggle-mission-btn 
-                                 {% if not mission.is_active %}btn-activate{% else %}btn-deactivate{% endif %}" 
-                            data-id="{{ mission.id }}" 
-                            data-activate="{% if not mission.is_active %}true{% else %}false{% endif %}">
-                        {% if not mission.is_active %}Activate{% else %}Deactivate{% endif %}
-                    </button>
+                    <a href="{{ url_for('edit_mission', mission_id=mission.mission_id) }}" class="btn btn-edit">Edit</a>
+                    
+                    {# The only action left is Delete (old activate/deactivate logic removed) #}
+                    <form method="POST" action="{{ url_for('delete_mission', mission_id=mission.mission_id) }}" style="display:inline;">
+                        <button type="submit" 
+                                class="btn btn-delete" 
+                                onclick="return confirm('Are you sure you want to permanently delete the mission {{ mission.name }}? This cannot be undone.');">
+                            Delete
+                        </button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Add new mission
-    document.getElementById('add-mission-btn').addEventListener('click', function() {
-        alert('Add new mission functionality would go here');
-    });
-
-    // Edit mission
-    document.querySelectorAll('.edit-mission-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const missionId = this.getAttribute('data-id');
-            alert('Edit mission ' + missionId + ' functionality would go here');
-        });
-    });
-
-    // Toggle mission status
-    document.querySelectorAll('.toggle-mission-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const missionId = this.getAttribute('data-id');
-            const activate = this.getAttribute('data-activate') === 'true';
-            
-            if (confirm('Are you sure you want to ' + (activate ? 'activate' : 'deactivate') + ' this mission?')) {
-                fetch('/admin/mission/' + missionId + '/toggle', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({activate: activate})
-                }).then(response => response.json())
-                  .then(data => {
-                      if (data.success) {
-                          location.reload();
-                      } else {
-                          alert('Error: ' + data.message);
-                      }
-                  }).catch(error => {
-                      alert('Error: ' + error);
-                  });
-            }
-        });
-    });
-});
-</script>
-
-<style>
-.admin-container {
-    padding: 20px;
-}
-
-.admin-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.admin-table th, .admin-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.admin-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-.btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    margin: 2px;
-    font-size: 14px;
-}
-
-.btn-primary { 
-    background-color: #007bff; 
-    color: white; 
-}
-
-.btn-edit { 
-    background-color: #ffc107; 
-    color: black; 
-}
-
-.btn-activate { 
-    background-color: #28a745; 
-    color: white; 
-}
-
-.btn-deactivate { 
-    background-color: #dc3545; 
-    color: white; 
-}
-
-.admin-actions {
-    margin-bottom: 20px;
-}
-</style>
 {% endblock %}

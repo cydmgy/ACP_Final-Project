@@ -41,26 +41,24 @@
 
     {% if inventory %}
     <div class="inventory-grid">
-        {% for creature in inventory %}
-        <div class="creature-card {{ creature.rarity }}">
-            <div class="creature-image">
-                {% if creature.rarity == 'common' %}🐠{% endif %}
-                {% if creature.rarity == 'rare' %}🐢{% endif %}
-                {% if creature.rarity == 'epic' %}🐬{% endif %}
-                {% if creature.rarity == 'legendary' %}🦈{% endif %}
-            </div>
-            <h4 class="creature-name">{{ creature.name }}</h4>
-            <p class="rarity {{ creature.rarity }}">{{ creature.rarity|title }}</p>
+    {% for creature in inventory %}\
+    <div class="creature-card {{ creature.rarity }}">
+        <div class="creature-image">
+            <img src="{{ url_for('static', filename=creature.image) }}" alt="{{ creature.name }}">
         </div>
-        {% endfor %}
+        <h4 class="creature-name">{{ creature.name }}</h4>
+        <p class="rarity {{ creature.rarity }}">{{ creature.rarity|title }}</p>
+        <p class="creature-description">{{ creature.description }}</p>
     </div>
+    {% endfor %}
+    </div> 
     {% else %}
     <div class="no-creatures">
         <div class="empty-state">
             <div class="empty-icon">🌊</div>
             <h3>No creatures yet!</h3>
             <p>Go to the Gacha section to pull your first marine creature.</p>
-            <a href="{{ url_for('gacha') }}" class="cta-button">Pull Gacha Now</a>
+            <a href="{{ url_for('gacha') }}" class="ocean-button">Go to Gacha</a>
         </div>
     </div>
     {% endif %}

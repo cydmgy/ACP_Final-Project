@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-container" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: rgba(255, 255, 255, 0.8); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; color: #007bff;">{{ title }}</h2>
+
+    <form method="POST" action="{{ request.path }}" style="display: grid; gap: 15px;">
+        {{ form.hidden_tag() }}
+        
+        <div>
+            {{ form.name.label(style="font-weight: bold; color: #333;") }}
+            {{ form.name(class="form-control", style="width: 100%; padding: 8px; box-sizing: border-box;") }}
+        </div>
+
+        <div>
+            {{ form.description.label(style="font-weight: bold; color: #333;") }}
+            {{ form.description(class="form-control", style="width: 100%; padding: 8px; box-sizing: border-box; height: 100px;") }}
+        </div>
+
+        <div>
+            {{ form.target.label(style="font-weight: bold; color: #333;") }}
+            {{ form.target(class="form-control", style="width: 100%; padding: 8px; box-sizing: border-box;") }}
+        </div>
+
+        <div>
+            {{ form.reward.label(style="font-weight: bold; color: #333;") }}
+            {{ form.reward(class="form-control", style="width: 100%; padding: 8px; box-sizing: border-box;") }}
+        </div>
+        
+        <div>
+            {{ form.order.label(style="font-weight: bold; color: #333;") }}
+            {{ form.order(class="form-control", style="width: 100%; padding: 8px; box-sizing: border-box;") }}
+        </div>
+
+        {{ form.submit(class="btn btn-primary ocean-button", style="margin-top: 10px;") }}
+    </form>
+    
+    <p style="margin-top: 15px;">
+        <a href="{{ url_for('admin_missions') }}">← Back to Mission List</a>
+    </p>
+</div>
+{% endblock %}

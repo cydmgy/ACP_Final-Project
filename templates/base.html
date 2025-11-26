@@ -5,54 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Sea Life Gacha</title>
-    <style>
-        /* Add basic layout styles if missing from style.css */
-        body { font-family: sans-serif; margin: 0; background: #f0f8ff; }
-        .container { display: flex; min-height: 100vh; }
-        
-        /* Sidebar styling */
-        .sidebar { 
-            width: 250px; 
-            background: #ffffff; 
-            padding: 20px; 
-            border-right: 1px solid #dee2e6;
-            flex-shrink: 0;
-        }
-        
-        /* Layout for Auth page (Centered, no sidebar) */
-        .container.auth-mode {
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%);
-        }
-        
-        .main-content { flex-grow: 1; padding: 20px; }
-        
-        /* Nav styling */
-        .sidebar ul { list-style: none; padding: 0; }
-        .sidebar li { margin-bottom: 10px; }
-        .sidebar a { text-decoration: none; color: #333; font-weight: bold; display: block; padding: 10px; border-radius: 5px; }
-        .sidebar a:hover, .sidebar a.active { background: #e1f5fe; color: #0288d1; }
-        
-        /* Flash messages */
-        .alert { padding: 15px; margin-bottom: 20px; border-radius: 4px; }
-        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-    </style>
 </head>
 <body>
-    <div class="container {% if request.endpoint == 'auth' %}auth-mode{% endif %}">
+    {% set auth_endpoints = ['auth', 'login', 'register', 'forgot_password'] %}
+    {% set hide_sidebar = request.endpoint in auth_endpoints %}
+    <div class="container {% if hide_sidebar %}auth-mode{% endif %}">
         
-        {% if request.endpoint != 'auth' %}
+        {% if not hide_sidebar %}
         <div class="sidebar">
             <h2>Sea Life Gacha</h2>
             <ul>
                 {% if session.get('user_id') %}
-                    <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
-                    <li><a href="{{ url_for('gacha') }}" class="{% if request.endpoint == 'gacha' %}active{% endif %}">Gacha</a></li>
-                    <li><a href="{{ url_for('inventory') }}" class="{% if request.endpoint == 'inventory' %}active{% endif %}">Inventory</a></li>
+                    <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}" title="Clicker and Missions">Home</a></li>
+                    <li><a href="{{ url_for('gacha') }}" class="{% if request.endpoint == 'gacha' %}active{% endif %}" title="Pull New Creatures">Gacha</a></li>
+                    <li><a href="{{ url_for('inventory') }}" class="{% if request.endpoint == 'inventory' %}active{% endif %}" title="View Your Collection">Inventory</a></li>
                 {% endif %}
             </ul>
+
+            {% if session.get('role') == 'admin' %}
+                <p class="admin-label" style="font-size: 0.9em; font-weight: bold; color: #a0d8f0; padding: 0 15px;">Admin Tools</p>
+                <ul>
+                    <li><a href="{{ url_for('admin_creatures') }}" class="{% if request.endpoint in ['admin_creatures', 'new_creature', 'edit_creature'] %}active{% endif %}" title="Edit Gacha rates and creatures">Manage Creatures</a></li>
+                    <li><a href="{{ url_for('admin_missions') }}" class="{% if request.endpoint in ['admin_missions', 'new_mission', 'edit_mission'] %}active{% endif %}" title="Edit Missions and Rewards">Manage Missions</a></li>
+                    <li><a href="{{ url_for('logout') }}" class="logout-link">Log Out</a></li>
+                </ul>
+            {% endif %}
+
         </div>
         {% endif %}
 

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-container" style="max-width: 600px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+    <h2>{{ title }}</h2>
+
+    <form method="POST" action="{{ request.path }}" style="display: grid; gap: 15px;">
+        {{ form.hidden_tag() }}
+        
+        <div>
+            {{ form.name.label }}
+            {{ form.name(style="width: 100%; padding: 8px; box-sizing: border-box;") }}
+        </div>
+        
+        <div>
+            {{ form.description.label }}
+            {{ form.description(style="width: 100%; padding: 8px; box-sizing: border-box; height: 100px;") }}
+        </div>
+        <div>
+            {{ form.rarity.label }}
+            {{ form.rarity(style="width: 100%; padding: 8px; box-sizing: border-box;") }}
+        </div>
+
+        <div>
+            {{ form.image.label }}
+            {{ form.image(style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;", placeholder="filename.png") }}
+        </div>
+
+        <div>
+            {{ form.probability.label }}
+            {{ form.probability(style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;", step="0.0001") }}
+        </div>
+
+        {{ form.submit(class="btn btn-primary ocean-button", style="margin-top: 10px;") }}
+    </form>
+
+    <p style="margin-top: 15px;">
+        <a href="{{ url_for('admin_creatures') }}">← Back to Creatures List</a>
+    </p>
+</div>
+{% endblock %}
