@@ -3,6 +3,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import random
 from functools import wraps
 from datetime import datetime
+
 # Removed: from sqlalchemy import case
 
 # Import data models and form definitions
@@ -361,66 +362,12 @@ def delete_mission(mission_id):
 
 # --- Database Initialization ---
 
-def initialize_default_data():
-    if not Creature.query.first(): 
-        print("Initializing default creatures...")
-        # Placeholder description is included
-        placeholder_desc = "A mysterious marine creature of the deep sea. We are still learning about its true nature and abilities."
-        
-        defaults = [
-        # Common
-        {"name": "Pebbleback Shrimp", "rarity": "common", "image": "Pebbleback_Shrimp.png", "probability": 0.53, "description": placeholder_desc},
-        {"name": "Common 2", "rarity": "common", "image": ".png", "probability": 0.53, "description": placeholder_desc},
-        {"name": "Common 3", "rarity": "common", "image": ".png", "probability": 0.53, "description": placeholder_desc},
-        {"name": "Common 4", "rarity": "common", "image": ".png", "probability": 0.53, "description": placeholder_desc},
-        {"name": "Common 5", "rarity": "common", "image": ".png", "probability": 0.53, "description": placeholder_desc},
-        {"name": "Common 6", "rarity": "common", "image": ".png", "probability": 0.53, "description": placeholder_desc},
-        {"name": "Common 7", "rarity": "common", "image": ".png", "probability": 0.53, "description": placeholder_desc},
-        {"name": "Common 8", "rarity": "common", "image": ".png", "probability": 0.53, "description": placeholder_desc},
-    
-        # Rare 
-        {"name": "Rare 1", "rarity": "rare", "image": ".png", "probability": 0.30, "description": placeholder_desc},
-        {"name": "Rare 2", "rarity": "rare", "image": ".png", "probability": 0.30, "description": placeholder_desc},
-        {"name": "Rare 3", "rarity": "rare", "image": ".png", "probability": 0.30, "description": placeholder_desc},
-        {"name": "Rare 4", "rarity": "rare", "image": ".png", "probability": 0.30, "description": placeholder_desc},
-        {"name": "Rare 5", "rarity": "rare", "image": ".png", "probability": 0.30, "description": placeholder_desc},
-        {"name": "Rare 6", "rarity": "rare", "image": ".png", "probability": 0.30, "description": placeholder_desc},
-    
-        # Epic 
-        {"name": "Epic 1", "rarity": "epic", "image": ".png", "probability": 0.12, "description": placeholder_desc},
-        {"name": "Epic 2", "rarity": "epic", "image": ".png", "probability": 0.12, "description": placeholder_desc},
-        {"name": "Epic 3", "rarity": "epic", "image": ".png", "probability": 0.12, "description": placeholder_desc},
-        {"name": "Epic 4", "rarity": "epic", "image": ".png", "probability": 0.12, "description": placeholder_desc},
-    
-        # Legendary 
-        {"name": "Legendary 1", "rarity": "legendary", "image": ".png", "probability": 0.05, "description": placeholder_desc}, 
-        {"name": "Legendary 2", "rarity": "legendary", "image": ".png", "probability": 0.05, "description": placeholder_desc},
-        ]
-        for c in defaults:
-            db.session.add(Creature(**c))
-    
-    if not Mission.query.first(): 
-        print("Initializing default missions...")
-        defaults = [
-            {"name": "First Steps", "description": "Click 10 times", "target": 10, "reward": 10},
-            {"name": "Getting Started", "description": "Click 50 times", "target": 50, "reward": 25},
-        ]
-        for m in defaults:
-             db.session.add(Mission(order=defaults.index(m)+1, **m))
-            
-    db.session.commit()
-
-
 if __name__ == '__main__':
+    from seeds import initialize_default_data, create_default_admin
+
     with app.app_context():
-        
         db.create_all()
         initialize_default_data()
-
-        if not User.query.filter_by(username='admin').first():
-            admin = User(username='admin', password_hash=generate_password_hash("admin123"), role='admin')
-            
-            db.session.add(admin)
-            db.session.commit()
+        create_default_admin()
 
     app.run(debug=True)

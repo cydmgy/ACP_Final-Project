@@ -129,3 +129,9 @@
     background-color: #dc3545; 
     color: white; 
 }
+
+.inventory-image {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+}

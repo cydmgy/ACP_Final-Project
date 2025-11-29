@@ -44,7 +44,9 @@
     {% for creature in inventory %}\
     <div class="creature-card {{ creature.rarity }}">
         <div class="creature-image">
-            <img src="{{ url_for('static', filename=creature.image) }}" alt="{{ creature.name }}">
+            <img src="{{ url_for('static', filename=creature.image) }}" 
+            alt="{{ creature.name }}"
+            class="inventory-image">
         </div>
         <h4 class="creature-name">{{ creature.name }}</h4>
         <p class="rarity {{ creature.rarity }}">{{ creature.rarity|title }}</p>
