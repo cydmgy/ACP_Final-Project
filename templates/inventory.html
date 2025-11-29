@@ -41,7 +41,7 @@
 
     {% if inventory %}
     <div class="inventory-grid">
-    {% for creature in inventory %}\
+    {% for creature in inventory %}
     <div class="creature-card {{ creature.rarity }}">
         <div class="creature-image">
             <img src="{{ url_for('static', filename=creature.image) }}" 

@@ -2,14 +2,23 @@
 
 {% block content %}
 <div class="gacha-container">
+
+    <div class="gacha-header">
     <h2>Gacha Section</h2>
     <div class="coins-display">
         <h3>Your Coins: <span id="gacha-coins">{{ coins }}</span></h3>
     </div>
+</div>
+   <div class="gacha-middle-row">
+        <div class="gacha-result-center">
+            <div id="gacha-result"></div>
+        </div>
     <div class="gacha-info">
         <p>1x Pull: 5 coins</p>
         <p>10x Pull: 50 coins</p>
     </div>
+</div>
+
     <div class="gacha-pull">
         <button id="pull-single" class="gacha-button">1x Pull</button>
         <button id="pull-multi" class="gacha-button">10x Pull</button>

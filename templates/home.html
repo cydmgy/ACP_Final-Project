@@ -2,36 +2,38 @@
 
 {% block content %}
 <div class="home-container">
+
+    <div class="home-header">
+        <h2>Click to Earn Coins!</h2>
+        
     <div class="stats-header">
-        <div class="stat-card">
-            <h3>Player</h3>
-            <div class="stat-value" style="font-size: 1.2rem;">{{ username }}</div>
-            <a href="{{ url_for('logout') }}" style="font-size: 0.8rem; color: #ff6b6b;">Log Out</a>
-        </div>
         <div class="stat-card">
             <h3>Total Clicks</h3>
             <div class="stat-value" id="click-counter">{{ clicks }}</div>
         </div>
+
         <div class="stat-card">
             <h3>Coins</h3>
             <div class="stat-value" id="coin-counter">{{ coins }}</div>
         </div>
+
         <div class="stat-card" id="pulls-stat-card">
             <h3>Available Pulls</h3>
             <div class="stat-value" id="pull-counter">{{ coins // 20 }}</div>
         </div>
     </div>
+</div>
 
     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-
+<div class="home-content">
     <div class="click-area">
-        <h2>Click to Earn Coins!</h2>
         <button id="click-button" class="ocean-button">Click here</button>
         <p>Every 5 clicks gives 1 coin!</p>
     </div>
 
     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-
+   
+    <div class="missions-section">
     <div class="missions-panel">
         <h2>Missions</h2>
         <div class="missions-list">
@@ -56,6 +58,8 @@
             {% endfor %}
         </div>
     </div>
+</div>
+</div>
 </div>
 {% endblock %}
 
