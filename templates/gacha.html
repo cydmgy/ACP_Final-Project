@@ -77,8 +77,12 @@
                                 <p>Added to your inventory!</p>
                             </div>
                         `;
-                        $('#gacha-result').html(cardHtml);
-                        
+                        $('#gacha-result').html(`
+                            <div class="single-pull-result">
+                                ${cardHtml}
+                            </div>
+                        `);
+
                     } else {
                         $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
                     }
@@ -112,7 +116,11 @@
                         });
                         
                         resultHtml += '</div></div>';
-                        $('#gacha-result').html(resultHtml);
+                       $('#gacha-result').html(`
+                            <div class="multi-pull-result">
+                                ${resultHtml}
+                            </div>
+                        `);
                         
                     } else {
                         $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);

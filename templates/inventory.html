@@ -41,16 +41,21 @@
 
     {% if inventory %}
     <div class="inventory-grid">
+
     {% for creature in inventory %}
+    <div class="inventory-container">
     <div class="creature-card {{ creature.rarity }}">
         <div class="creature-image">
             <img src="{{ url_for('static', filename=creature.image) }}" 
             alt="{{ creature.name }}"
-            class="inventory-image">
+            class="inventory-image toggle-desc">
         </div>
         <h4 class="creature-name">{{ creature.name }}</h4>
         <p class="rarity {{ creature.rarity }}">{{ creature.rarity|title }}</p>
-        <p class="creature-description">{{ creature.description }}</p>
+        <div class="creature-description hidden">
+             {{ creature.description }}
+        </div>
+    </div>
     </div>
     {% endfor %}
     </div> 
@@ -65,4 +70,17 @@
     </div>
     {% endif %}
 </div>
+
+<div id="descriptionPopup" class="popup">
+        <div class="popup-content">
+            <span id="popupClose" class="popup-close">&times;</span>
+            <h2 id="popupName"></h2>
+            <p id="popupRarity"></p>
+            <p id="popupDescription"></p>
+        </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
 {% endblock %}

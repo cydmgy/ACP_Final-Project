@@ -7,7 +7,6 @@
     display: inline-block;
 }
 
-/* Basic styles for gacha results */
 .gacha-result-card {
     background: rgba(255, 255, 255, 0.1);
     padding: 20px;
@@ -27,16 +26,17 @@
 
 .multi-result {
     background: rgba(255, 255, 255, 0.1);
+    border: 3px solid #4fc3f7;
+    width: 90%;
     padding: 20px;
     margin: 20px 0;
     border-radius: 10px;
+    text-align: center;
 }
 
-.creatures-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
-    margin-top: 15px;
+.multi-result h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 .creature-mini-card {
@@ -61,25 +61,45 @@
     background: #29b6f6;
 }
 
-/* Example CSS you would add */
-.creatures-grid {
+.single-pull-result img {
+    max-height: 60vh;  
+    width: auto;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.single-pull-result .creature-card {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.creatures-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);  
+    grid-template-rows: repeat(2, auto); 
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 20px;
     justify-content: center;
 }
-.creature-card {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-    width: 150px; /* Adjust size */
-}
+
 .creature-image-gacha img {
-    max-width: 100%;
+    width: 50%;
     height: auto;
 }
+
 .creature-card.mini {
-    width: 80px; /* Smaller size for multi-pulls */
+    width: 120px; 
+    padding: 10px;
+    background: white;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+}
+
+.creature-card.mini img {
+    width: 100%;
+    height: auto;
 }
 
 .admin-container {
@@ -138,6 +158,8 @@
 
 .container {
     display: flex;
+    height: 100vh;      
+    overflow: hidden;  
     font-size: 20px;
     text-align: center;
 }
@@ -177,6 +199,7 @@
 .main-content {
     flex: 1;
     padding: 20px;
+    overflow-y: auto;  
 }
 
 .home-container {
@@ -264,11 +287,11 @@
 
 .inventory-stats {
     display: flex;
-    flex-direction: column;   
+    flex-direction: row;   
     position: absolute;
     top: 20px;   
     right: 20px;
-    gap: 8px;
+    gap: 15px;
     z-index: 10;
     font-size: 20px;
 }
@@ -277,15 +300,65 @@
     margin-bottom: 10px;
 }
 
-.inventory-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr); 
-    gap: 20px;
-    width: 100px;
-    margin-top: 40px;
+.creature-description {
+    transition: 0.2s ease;
+    margin-top: 5px;
 }
 
-.creature-card {
-    padding: 10px;
-    box-sizing: border-box;
+.hidden {
+    display: none;
+}
+
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.popup-content {
+    background: white;
+    width: 300px;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.popup-close {
+    float: right;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.inventory-container .inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);  
+    gap: 12px;                               
+    justify-items: center;
+    padding: 20px;
+}
+   
+.inventory-container .creature-card {
+     width: 160px;      
+    border: 2px solid #ccc;
+    border-radius: 12px;
+    background: white;
+    padding: 8px;
+}
+
+.inventory-container .inventory-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.inventory-container .creature-name,
+.inventory-container .rarity {
+    display: none;
 }
