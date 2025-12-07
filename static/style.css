@@ -102,8 +102,12 @@
     height: auto;
 }
 
-.admin-container {
-    padding: 20px;
+.admin-actions {
+    display: flex;
+    justify-content: center;  
+    align-items: center;
+    gap: 10px;                
+    margin-bottom: 20px;
 }
 
 .admin-table {
