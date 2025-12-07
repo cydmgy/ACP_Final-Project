@@ -188,7 +188,7 @@ def handle_click():
         current_clicks = user.clicks
         coins_earned = 0
         
-        for mission in get_all_missions(): 
+        for mission in get_all_missions():
             completed = UserMission.query.filter_by(user_id=user.user_id, mission_id=mission.mission_id, completed=True).first()
             if not completed and current_clicks >= mission.target:
                 new_completion = UserMission(user_id=user.user_id, mission_id=mission.mission_id, completed=True, completed_at=datetime.utcnow())
@@ -248,10 +248,22 @@ def pull_gacha():
 @app.route('/inventory')
 def inventory():
     user = get_current_user()
-    if not user: return redirect(url_for('auth'))
-    # Passes inventory data including the new description field
-    return render_template('inventory.html', inventory=get_user_data(user)['inventory'])
+    if not user:
+        return redirect(url_for('auth'))
 
+    filter_value = request.args.get("filter", "all")
+
+    inventory = get_user_data(user)['inventory']
+
+    if filter_value != "all":
+        inventory = list(filter(lambda c: c["rarity"].lower() == filter_value.lower(), inventory))
+
+    return render_template(
+        'inventory.html',
+        inventory=inventory,
+        selected_filter=filter_value
+    )
+    
 # --- Admin Routes (Render) ---
 
 @app.route('/admin/creatures')

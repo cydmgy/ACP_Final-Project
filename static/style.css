@@ -288,12 +288,9 @@
 .inventory-stats {
     display: flex;
     flex-direction: row;   
-    position: absolute;
-    top: 20px;   
-    right: 20px;
+    justify-content: center;
     gap: 15px;
-    z-index: 10;
-    font-size: 20px;
+    font-size: 15px;
 }
 
 .stat-item {
@@ -338,27 +335,39 @@
 
 .inventory-container .inventory-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);  
-    gap: 12px;                               
-    justify-items: center;
-    padding: 20px;
+    grid-template-columns: repeat(5, 220px);
+    grid-template-rows: repeat(auto-fill, 322px);
+    justify-content: center;
+    gap: 1px;
+    padding: 1px;
 }
-   
+
 .inventory-container .creature-card {
-     width: 160px;      
-    border: 2px solid #ccc;
-    border-radius: 12px;
-    background: white;
-    padding: 8px;
+    width: 240px;               
+    height: 360px;              
+    border-radius: 20px;        
+    overflow: hidden;           
+    padding: 0;                 
+    background: transparent;   
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .inventory-container .inventory-image {
     width: 100%;
-    height: auto;
-    display: block;
+    height: 100%;
+    object-fit: cover;     
+    border-radius: 20px;
 }
 
 .inventory-container .creature-name,
 .inventory-container .rarity {
     display: none;
+}
+
+.filter-form {
+    float: right;
+    clear: right; 
+    margin-top: 14px;
 }

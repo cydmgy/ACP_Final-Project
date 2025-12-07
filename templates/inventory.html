@@ -3,7 +3,17 @@
 {% block content %}
 <div class="inventory-container">
     <h2>Your Marine Creature Collection</h2>
-    
+
+<form method="GET" id="filterForm" class="filter-form">
+    <select name="filter" onchange="document.getElementById('filterForm').submit()">
+        <option value="all" {% if selected_filter == "all" %}selected{% endif %}>All</option>
+        <option value="common" {% if selected_filter == "common" %}selected{% endif %}>Common</option>
+        <option value="rare" {% if selected_filter == "rare" %}selected{% endif %}>Rare</option>
+        <option value="epic" {% if selected_filter == "epic" %}selected{% endif %}>Epic</option>
+        <option value="legendary" {% if selected_filter == "legendary" %}selected{% endif %}>Legendary</option>
+    </select>
+</form>
+
     <div class="inventory-stats">
         <div class="stat-item">
             <h3>Total Creatures</h3>
