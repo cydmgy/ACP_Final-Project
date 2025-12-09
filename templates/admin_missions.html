@@ -3,10 +3,21 @@
 {% block content %}
 <div class="admin-container">
     <h2>Manage Missions</h2>
+
+<div class="admin-actions" style="display:flex; gap:20px; margin-bottom:20px;">
     
-    <div class="admin-actions">
-        <a href="{{ url_for('new_mission') }}" class="btn btn-primary">Add New Mission</a>
-    </div>
+    <form action="{{ url_for('import_missions') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="json_file" accept="application/json" required>
+        <button type="submit" class="btn btn-primary">Import Missions</button>
+    </form>
+
+    <a href="{{ url_for('new_mission') }}" class="btn btn-primary">Add New Mission</a>
+
+    <a href="{{ url_for('export_missions') }}" class="btn btn-primary">
+        Export Missions (JSON)
+    </a>
+
+</div>
 
     <table class="admin-table">
         <thead>

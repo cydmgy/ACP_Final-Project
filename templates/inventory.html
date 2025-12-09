@@ -3,7 +3,17 @@
 {% block content %}
 <div class="inventory-container">
     <h2>Your Marine Creature Collection</h2>
-    
+
+<form method="GET" id="filterForm" class="filter-form">
+    <select name="filter" onchange="document.getElementById('filterForm').submit()">
+        <option value="all" {% if selected_filter == "all" %}selected{% endif %}>All</option>
+        <option value="common" {% if selected_filter == "common" %}selected{% endif %}>Common</option>
+        <option value="rare" {% if selected_filter == "rare" %}selected{% endif %}>Rare</option>
+        <option value="epic" {% if selected_filter == "epic" %}selected{% endif %}>Epic</option>
+        <option value="legendary" {% if selected_filter == "legendary" %}selected{% endif %}>Legendary</option>
+    </select>
+</form>
+
     <div class="inventory-stats">
         <div class="stat-item">
             <h3>Total Creatures</h3>
@@ -41,16 +51,21 @@
 
     {% if inventory %}
     <div class="inventory-grid">
+
     {% for creature in inventory %}
+    <div class="inventory-container">
     <div class="creature-card {{ creature.rarity }}">
         <div class="creature-image">
             <img src="{{ url_for('static', filename=creature.image) }}" 
             alt="{{ creature.name }}"
-            class="inventory-image">
+            class="inventory-image toggle-desc">
         </div>
         <h4 class="creature-name">{{ creature.name }}</h4>
         <p class="rarity {{ creature.rarity }}">{{ creature.rarity|title }}</p>
-        <p class="creature-description">{{ creature.description }}</p>
+        <div class="creature-description hidden">
+             {{ creature.description }}
+        </div>
+    </div>
     </div>
     {% endfor %}
     </div> 
@@ -65,4 +80,17 @@
     </div>
     {% endif %}
 </div>
+
+<div id="descriptionPopup" class="popup">
+        <div class="popup-content">
+            <span id="popupClose" class="popup-close">&times;</span>
+            <h2 id="popupName"></h2>
+            <p id="popupRarity"></p>
+            <p id="popupDescription"></p>
+        </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/inventory.js') }}"></script>
 {% endblock %}

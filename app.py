@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash, Response
 from werkzeug.security import generate_password_hash, check_password_hash
-import random
+import random,  json
 from functools import wraps
 from datetime import datetime
 
@@ -168,12 +168,12 @@ def home():
     user_data = get_user_data(user)
     
     return render_template('home.html', 
-                           username=user.username, 
-                           clicks=user_data['clicks'], 
-                           coins=user.coins, 
-                           missions=get_all_missions(), 
-                           completed_missions=user_data['completed_missions'], 
-                           pulls=user.pulls) 
+        username=user.username, 
+        clicks=user_data['clicks'], 
+        coins=user.coins, 
+        missions=get_all_missions(), 
+        completed_missions=user_data['completed_missions'], 
+        pulls=user.pulls) 
 
 @app.route('/click', methods=['POST'])
 def handle_click():
@@ -188,7 +188,7 @@ def handle_click():
         current_clicks = user.clicks
         coins_earned = 0
         
-        for mission in get_all_missions(): 
+        for mission in get_all_missions():
             completed = UserMission.query.filter_by(user_id=user.user_id, mission_id=mission.mission_id, completed=True).first()
             if not completed and current_clicks >= mission.target:
                 new_completion = UserMission(user_id=user.user_id, mission_id=mission.mission_id, completed=True, completed_at=datetime.utcnow())
@@ -248,10 +248,22 @@ def pull_gacha():
 @app.route('/inventory')
 def inventory():
     user = get_current_user()
-    if not user: return redirect(url_for('auth'))
-    # Passes inventory data including the new description field
-    return render_template('inventory.html', inventory=get_user_data(user)['inventory'])
+    if not user:
+        return redirect(url_for('auth'))
 
+    filter_value = request.args.get("filter", "all")
+
+    inventory = get_user_data(user)['inventory']
+
+    if filter_value != "all":
+        inventory = list(filter(lambda c: c["rarity"].lower() == filter_value.lower(), inventory))
+
+    return render_template(
+        'inventory.html',
+        inventory=inventory,
+        selected_filter=filter_value
+    )
+    
 # --- Admin Routes (Render) ---
 
 @app.route('/admin/creatures')
@@ -359,6 +371,52 @@ def delete_mission(mission_id):
         flash(f"Mission '{mission.name}' deleted successfully.", 'success')
     return redirect(url_for('admin_missions'))
 
+@app.route("/missions/export")
+@admin_required
+def export_missions():
+    missions = Mission.query.order_by(Mission.order).all()
+
+    data = []
+    for m in missions:
+        data.append({
+            "name": m.name,
+            "description": m.description,
+            "target": m.target,
+            "reward": m.reward,
+            "order": m.order
+        })
+
+    json_data = json.dumps(data, indent=4)
+
+    return Response(
+        json_data,
+        mimetype="application/json",
+        headers={"Content-Disposition": "attachment; filename=missions.json"}
+    )
+
+@app.route("/missions/import", methods=["POST"])
+@admin_required
+def import_missions():
+    file = request.files.get("json_file")
+    if not file:
+        flash("No file uploaded", "error")
+        return redirect(url_for("admin_missions"))
+
+    data = json.load(file)
+
+    for item in data:
+        mission = Mission(
+            name=item.get("name"),
+            description=item.get("description"),
+            target=item.get("target"),
+            reward=item.get("reward"),
+            order=item.get("order")
+        )
+        db.session.add(mission)
+
+    db.session.commit()
+    flash("Missions imported successfully!", "success")
+    return redirect(url_for("admin_missions"))
 
 # --- Database Initialization ---
 

@@ -118,18 +118,28 @@
                 data: JSON.stringify({type: 'single'}),
                 success: function(data) {
                     console.log("Single pull success:", data);
-                    
-                    // Wait for animation to complete (2 seconds) before showing result
-                    setTimeout(() => {
-                        if (data.success) {
-                            showSingleResult(data.creature, data.coins);
-                        } else {
-                            $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
-                        }
+                    if (data.success) {
+                        $('#gacha-coins').text(data.coins);
                         
-                        // Re-enable buttons
-                        $('#pull-single, #pull-multi').prop('disabled', false);
-                    }, 2000); // Match this to animation duration
+                        const creature = data.creature;
+                        
+                        // Use the helper function to build the card HTML with the image
+                        const cardHtml = `
+                            <div class="gacha-result-card">
+                                <h3>You got a ${creature.name}!</h3>
+                                ${createCreatureCard(creature)}
+                                <p>Added to your inventory!</p>
+                            </div>
+                        `;
+                        $('#gacha-result').html(`
+                            <div class="single-pull-result">
+                                ${cardHtml}
+                            </div>
+                        `);
+
+                    } else {
+                        $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error("Single pull error:", error);
@@ -158,18 +168,26 @@
                 data: JSON.stringify({type: 'multi'}),
                 success: function(data) {
                     console.log("Multi pull success:", data);
-                    
-                    // Wait for animation to complete before showing results
-                    setTimeout(() => {
-                        if (data.success) {
-                            showMultiResult(data.creatures, data.coins);
-                        } else {
-                            $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
-                        }
+                    if (data.success) {
+                        $('#gacha-coins').text(data.coins);
                         
-                        // Re-enable buttons
-                        $('#pull-single, #pull-multi').prop('disabled', false);
-                    }, 2000);
+                        let resultHtml = '<div class="multi-result"><h3>10x Pull Results:</h3><div class="creatures-grid">';
+                        
+                        data.creatures.forEach(creature => {
+                            // Use the helper function to build mini-cards with images
+                            resultHtml += createCreatureCard(creature, true); 
+                        });
+                        
+                        resultHtml += '</div></div>';
+                       $('#gacha-result').html(`
+                            <div class="multi-pull-result">
+                                ${resultHtml}
+                            </div>
+                        `);
+                        
+                    } else {
+                        $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error("Multi pull error:", error);
