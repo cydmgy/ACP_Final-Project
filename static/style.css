@@ -60,8 +60,6 @@
 .gacha-button:hover {
     background: #29b6f6;
 }
-
-/* Example CSS you would add */
 .creatures-grid {
     display: flex;
     flex-wrap: wrap;
@@ -288,4 +286,120 @@
 .creature-card {
     padding: 10px;
     box-sizing: border-box;
+}
+
+/* Ready state */
+.ready-state {
+    font-size: 1.5em;
+    color: #4fc3f7;
+    padding: 40px;
+}
+
+/* Spinning container */
+.spinning-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+/* Spin + Pulse animation */
+@keyframes spinScale {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.3);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+.spinner {
+    font-size: 5em;
+    animation: spinScale 1s ease-in-out infinite;
+}
+
+.rolling-text {
+    margin-top: 20px;
+    font-size: 1.2em;
+    color: #4fc3f7;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Reveal animation for results */
+@keyframes gachaReveal {
+    0% {
+        transform: rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+    50% {
+        transform: rotate(360deg) scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+        opacity: 1;
+    }
+}
+
+.reveal-animation {
+    animation: gachaReveal 0.8s ease-out forwards;
+}
+
+/* Disable button state */
+.gacha-button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Enhanced creature card animations */
+.creature-card {
+    transition: transform 0.3s ease;
+}
+
+.creature-card:hover {
+    transform: scale(1.05);
+}
+
+/* Rarity-specific glows (optional enhancement) */
+.creature-card.Common {
+    border: 2px solid #9CA3AF;
+}
+
+.creature-card.Rare {
+    border: 2px solid #3B82F6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+.creature-card.Epic {
+    border: 2px solid #A855F7;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+}
+
+.creature-card.Legendary {
+    border: 2px solid #F59E0B;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.8);
+    animation: legendaryGlow 2s ease-in-out infinite;
+}
+
+@keyframes legendaryGlow {
+    0%, 100% {
+        box-shadow: 0 0 20px rgba(245, 158, 11, 0.8);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(245, 158, 11, 1);
+    }
 }
