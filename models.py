@@ -15,6 +15,7 @@ class User(db.Model):
     clicks = db.Column(db.Integer, default=0)
     coins = db.Column(db.Integer, default=0)
     pulls = db.Column(db.Integer, default=0)
+    time_spent = db.Column(db.Integer, default=0)
 
     avatar = db.Column(db.String(50), default='default.png')
     bio = db.Column(db.String(200), default='A marine creature collector')

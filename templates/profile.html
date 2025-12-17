@@ -23,19 +23,15 @@
                 <div class="stats-grid">
                     <div class="stat-box">
                         <span class="stat-label">Total Clicks</span>
-                        <span class="stat-value">{{ user.clicks }}</span>
+                        <span class="stat-value">{{ "{:,}".format(user.clicks) }}</span>
                     </div>
                     <div class="stat-box">
-                        <span class="stat-label">Total Coins</span>
-                        <span class="stat-value">{{ user.coins }}</span>
+                        <span class="stat-label">Time Spent</span>
+                        <span class="stat-value">{{ (user.time_spent // 3600)|int }}h {{ ((user.time_spent % 3600) // 60)|int }}m</span>
                     </div>
                     <div class="stat-box">
                         <span class="stat-label">Total Pulls</span>
-                        <span class="stat-value">{{ user.pulls }}</span>
-                    </div>
-                    <div class="stat-box">
-                        <span class="stat-label">Creatures</span>
-                        <span class="stat-value">{{ total_creatures }}</span>
+                        <span class="stat-value">{{ "{:,}".format(user.pulls) }}</span>
                     </div>
                 </div>
             </div>
@@ -44,32 +40,32 @@
             <div class="achievements-section">
                 <h3>Collection Progress</h3>
                 <div class="achievement-list">
-                    <div class="achievement-item {% if rare_count >= 5 %}completed{% endif %}">
-                        <span class="achievement-icon">⭐</span>
+                    <div class="achievement-item {% if user.clicks >= 20000 %}completed{% endif %}">
+                        <span class="achievement-icon">🎰</span>
                         <div class="achievement-info">
-                            <strong>Rare Collector</strong>
-                            <p>Collect 5 rare creatures ({{ rare_count }}/5)</p>
+                            <strong>Master Clicker</strong>
+                            <p>Complete 20,000 clicks ({{ "{:,}".format(user.clicks) }}/20,000)</p>
                         </div>
                     </div>
-                    <div class="achievement-item {% if epic_count >= 3 %}completed{% endif %}">
-                        <span class="achievement-icon">💎</span>
-                        <div class="achievement-info">
-                            <strong>Epic Hunter</strong>
-                            <p>Collect 3 epic creatures ({{ epic_count }}/3)</p>
-                        </div>
-                    </div>
-                    <div class="achievement-item {% if legendary_count >= 1 %}completed{% endif %}">
+                    <div class="achievement-item {% if legendary_count >= 150 %}completed{% endif %}">
                         <span class="achievement-icon">👑</span>
                         <div class="achievement-info">
-                            <strong>Legendary Master</strong>
-                            <p>Collect 1 legendary creature ({{ legendary_count }}/1)</p>
+                            <strong>Legendary Collector</strong>
+                            <p>Collect 150 legendary creatures ({{ legendary_count }}/150)</p>
                         </div>
                     </div>
-                    <div class="achievement-item {% if completed_missions >= 5 %}completed{% endif %}">
+                    <div class="achievement-item {% if completed_missions >= 50 %}completed{% endif %}">
                         <span class="achievement-icon">🎯</span>
                         <div class="achievement-info">
-                            <strong>Mission Veteran</strong>
-                            <p>Complete 5 missions ({{ completed_missions }}/5)</p>
+                            <strong>Mission Legend</strong>
+                            <p>Complete 50 missions ({{ completed_missions }}/50)</p>
+                        </div>
+                    </div>
+                    <div class="achievement-item {% if epic_count >= 75 %}completed{% endif %}">
+                        <span class="achievement-icon">💎</span>
+                        <div class="achievement-info">
+                            <strong>Epic Hoarder</strong>
+                            <p>Collect 75 epic creatures ({{ epic_count }}/75)</p>
                         </div>
                     </div>
                 </div>

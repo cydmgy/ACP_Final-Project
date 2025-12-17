@@ -81,6 +81,20 @@ def apply_pity_system(user, creatures):
     
     return None
 
+@app.route('/update_time', methods=['POST'])
+def update_time():
+    user = get_current_user()
+    if not user: return jsonify({'error': 'Unauthorized'}), 401
+    try:
+        data = request.get_json()
+        seconds = data.get('seconds', 0)
+        user.time_spent += seconds
+        db.session.commit()
+        return jsonify({'success': True, 'total_time': user.time_spent})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
 # --- Authentication Routes ---
 
 @app.route('/auth')
