@@ -1,23 +1,18 @@
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash, Response
 from werkzeug.security import generate_password_hash, check_password_hash
-import random,  json
+import random, json
 from functools import wraps
 from datetime import datetime
 
-# Removed: from sqlalchemy import case
-
-# Import data models and form definitions
 from models import db, User, Creature, Mission, UserCreature, UserMission
-from forms import LoginForm, RegisterForm, ForgotPasswordForm, CreatureForm, MissionForm
+from forms import LoginForm, RegisterForm, ForgotPasswordForm, CreatureForm, MissionForm, ProfileForm
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
 
-# SQLite Database Configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sea_life_gacha.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Initialize the database with the app
 db.init_app(app)
 
 # --- Helper Functions ---
@@ -58,7 +53,7 @@ def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         user = get_current_user()
-        if not user or user.role != 'admin': # Check for the 'admin' role
+        if not user or user.role != 'admin':
             flash("Access denied. Admin privileges required.", 'error')
             return redirect(url_for('home')) 
         return f(*args, **kwargs)
@@ -67,6 +62,25 @@ def admin_required(f):
 def get_all_missions():
     return Mission.query.order_by(Mission.order).all()
 
+def apply_pity_system(user, creatures):
+    """Apply pity system logic to guarantee drops"""
+    # Guaranteed legendary every 80 pulls
+    if user.legendary_pity >= 79:
+        legendaries = [c for c in creatures if c.rarity == 'legendary']
+        if legendaries:
+            user.legendary_pity = 0
+            user.pity_counter = 0
+            return random.choice(legendaries)
+    
+    # Guaranteed epic every 10 pulls
+    if user.pity_counter >= 9:
+        epics = [c for c in creatures if c.rarity == 'epic']
+        if epics:
+            user.pity_counter = 0
+            return random.choice(epics)
+    
+    return None
+
 # --- Authentication Routes ---
 
 @app.route('/auth')
@@ -74,7 +88,6 @@ def auth():
     if get_current_user():
         return redirect(url_for('home'))
     
-    # Pass form instances to the template
     login_form = LoginForm()
     register_form = RegisterForm()
     forgot_form = ForgotPasswordForm()
@@ -93,7 +106,6 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         
-        # Check if the user exists and password is correct
         if user and check_password_hash(user.password_hash, form.password.data):
             session['user_id'] = user.user_id 
             session['role'] = user.role 
@@ -117,7 +129,6 @@ def register():
             flash('Username already exists.', 'error')
             return redirect(url_for('auth', section='register'))
         
-        # Use sha256 method
         hashed_password = generate_password_hash(form.password.data)
         new_user = User(
             username=form.username.data, 
@@ -158,6 +169,40 @@ def logout():
     flash('You have been logged out.', 'info')
     return redirect(url_for('auth'))
 
+# --- Profile Routes ---
+
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    user = get_current_user()
+    if not user:
+        return redirect(url_for('auth'))
+    
+    form = ProfileForm(obj=user)
+    
+    if form.validate_on_submit():
+        user.avatar = form.avatar.data
+        user.bio = form.bio.data
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('profile'))
+    
+    user_data = get_user_data(user)
+    
+    # Calculate achievements
+    total_creatures = len(user_data['inventory'])
+    rare_count = len([c for c in user_data['inventory'] if c['rarity'] == 'rare'])
+    epic_count = len([c for c in user_data['inventory'] if c['rarity'] == 'epic'])
+    legendary_count = len([c for c in user_data['inventory'] if c['rarity'] == 'legendary'])
+    
+    return render_template('profile.html',
+                         form=form,
+                         user=user,
+                         total_creatures=total_creatures,
+                         rare_count=rare_count,
+                         epic_count=epic_count,
+                         legendary_count=legendary_count,
+                         completed_missions=len(user_data['completed_missions']))
+
 # --- Game Routes ---
 
 @app.route('/')
@@ -182,7 +227,6 @@ def handle_click():
     try:
         user.clicks += 1
         
-        # Example coin logic, 1000 coins every 5 clicks for easy testing
         if user.clicks % 5 == 0: user.coins += 1000 
         
         current_clicks = user.clicks
@@ -206,7 +250,10 @@ def handle_click():
 def gacha():
     user = get_current_user()
     if not user: return redirect(url_for('auth'))
-    return render_template('gacha.html', coins=user.coins)
+    return render_template('gacha.html', 
+                         coins=user.coins,
+                         pity_counter=user.pity_counter,
+                         legendary_pity=user.legendary_pity)
 
 @app.route('/pull_gacha', methods=['POST'])
 def pull_gacha():
@@ -230,17 +277,48 @@ def pull_gacha():
         if total_prob <= 0:
             return jsonify({'success': False, 'message': 'All creatures have zero or negative probability! Cannot pull.'})
         
-        for _ in range(loops):
-            rand = random.uniform(0, total_prob)
-            curr, selected = 0, None
-            for c in creatures:
-                curr += c.probability
-                if rand <= curr: selected = c; break
-            if not selected: selected = creatures[-1] 
+        for i in range(loops):
+            # Check pity system first
+            pity_creature = apply_pity_system(user, creatures)
+            
+            if pity_creature:
+                selected = pity_creature
+            else:
+                # Normal random selection
+                rand = random.uniform(0, total_prob)
+                curr, selected = 0, None
+                for c in creatures:
+                    curr += c.probability
+                    if rand <= curr: selected = c; break
+                if not selected: selected = creatures[-1]
+                
+                # Update pity counters
+                user.pity_counter += 1
+                user.legendary_pity += 1
+                
+                # Reset counters if epic or legendary pulled
+                if selected.rarity in ['epic', 'legendary']:
+                    user.pity_counter = 0
+                if selected.rarity == 'legendary':
+                    user.legendary_pity = 0
+            
             db.session.add(UserCreature(user_id=user.user_id, creature_id=selected.creature_id))
-            results.append({'name': selected.name, 'rarity': selected.rarity, 'image': selected.image})
+            results.append({
+                'name': selected.name, 
+                'rarity': selected.rarity, 
+                'image': selected.image,
+                'pity': pity_creature is not None
+            })
+        
         db.session.commit()
-        return jsonify({'success': True, 'creature': results[0] if pull_type=='single' else None, 'creatures': results, 'coins': user.coins})
+        return jsonify({
+            'success': True, 
+            'creature': results[0] if pull_type=='single' else None, 
+            'creatures': results, 
+            'coins': user.coins,
+            'pity_counter': user.pity_counter,
+            'legendary_pity': user.legendary_pity
+        })
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -253,33 +331,42 @@ def inventory():
 
     filter_value = request.args.get("filter", "all")
 
-    inventory = get_user_data(user)['inventory']
-
+    full_inventory = get_user_data(user)['inventory']
+    
+    filtered_inventory = full_inventory
     if filter_value != "all":
-        inventory = list(filter(lambda c: c["rarity"].lower() == filter_value.lower(), inventory))
+        filtered_inventory = list(filter(lambda c: c["rarity"].lower() == filter_value.lower(), full_inventory))
+
+    total_count = len(full_inventory)
+    common_count = len([c for c in full_inventory if c["rarity"].lower() == "common"])
+    rare_count = len([c for c in full_inventory if c["rarity"].lower() == "rare"])
+    epic_count = len([c for c in full_inventory if c["rarity"].lower() == "epic"])
+    legendary_count = len([c for c in full_inventory if c["rarity"].lower() == "legendary"])
 
     return render_template(
         'inventory.html',
-        inventory=inventory,
-        selected_filter=filter_value
+        inventory=filtered_inventory,
+        full_inventory=full_inventory,
+        selected_filter=filter_value,
+        total_count=total_count,
+        common_count=common_count,
+        rare_count=rare_count,
+        epic_count=epic_count,
+        legendary_count=legendary_count
     )
     
-# --- Admin Routes (Render) ---
+# --- Admin Routes ---
 
 @app.route('/admin/creatures')
 @admin_required
 def admin_creatures():
-    # REVERTED: Sorting is back to default alphabetical by rarity, then name
     creatures = Creature.query.order_by(Creature.rarity, Creature.name).all()
-    
     return render_template('admin_creatures.html', creatures=creatures)
 
 @app.route('/admin/missions')
 @admin_required
 def admin_missions():
     return render_template('admin_missions.html', missions=Mission.query.order_by(Mission.order).all())
-
-# --- Admin CRUD (Creatures) ---
 
 @app.route('/admin/creatures/new', methods=['GET', 'POST'])
 @admin_required
@@ -309,7 +396,7 @@ def edit_creature(creature_id):
     
     form = CreatureForm(obj=creature)
     if form.validate_on_submit():
-        form.populate_obj(creature) # This handles name, rarity, probability, and now description
+        form.populate_obj(creature)
         db.session.commit()
         flash(f'Creature updated.', 'success')
         return redirect(url_for('admin_creatures'))
@@ -324,8 +411,6 @@ def delete_creature(creature_id):
         db.session.commit()
         flash(f"Creature '{creature.name}' deleted successfully.", 'success')
     return redirect(url_for('admin_creatures'))
-
-# --- Admin CRUD (Missions) ---
 
 @app.route('/admin/missions/new', methods=['GET', 'POST'])
 @admin_required
@@ -375,7 +460,6 @@ def delete_mission(mission_id):
 @admin_required
 def export_missions():
     missions = Mission.query.order_by(Mission.order).all()
-
     data = []
     for m in missions:
         data.append({
@@ -385,9 +469,7 @@ def export_missions():
             "reward": m.reward,
             "order": m.order
         })
-
     json_data = json.dumps(data, indent=4)
-
     return Response(
         json_data,
         mimetype="application/json",
@@ -401,9 +483,7 @@ def import_missions():
     if not file:
         flash("No file uploaded", "error")
         return redirect(url_for("admin_missions"))
-
     data = json.load(file)
-
     for item in data:
         mission = Mission(
             name=item.get("name"),
@@ -413,12 +493,9 @@ def import_missions():
             order=item.get("order")
         )
         db.session.add(mission)
-
     db.session.commit()
     flash("Missions imported successfully!", "success")
     return redirect(url_for("admin_missions"))
-
-# --- Database Initialization ---
 
 if __name__ == '__main__':
     from seeds import initialize_default_data, create_default_admin

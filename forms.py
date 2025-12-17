@@ -19,6 +19,20 @@ class ForgotPasswordForm(FlaskForm):
     new_password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
     submit = SubmitField('Update Password')
 
+# --- Profile Form ---
+
+class ProfileForm(FlaskForm):
+    avatar = SelectField('Avatar', choices=[
+        ('default.png', '🐠 Default Fish'),
+        ('turtle.png', '🐢 Sea Turtle'),
+        ('octopus.png', '🐙 Octopus'),
+        ('dolphin.png', '🐬 Dolphin'),
+        ('whale.png', '🐋 Whale'),
+        ('shark.png', '🦈 Shark')
+    ], validators=[DataRequired()])
+    bio = TextAreaField('Bio', validators=[Length(max=200)])
+    submit = SubmitField('Update Profile')
+
 # --- Admin Forms ---
 
 class CreatureForm(FlaskForm):

@@ -17,35 +17,23 @@
     <div class="inventory-stats">
         <div class="stat-item">
             <h3>Total Creatures</h3>
-            <span class="stat-number">{{ inventory|length }}</span>
+            <span class="stat-number">{{ total_count }}</span>
         </div>
         <div class="stat-item">
             <h3>Common</h3>
-            <span class="stat-number">
-                {% set common_count = inventory|selectattr('rarity', 'equalto', 'common')|list|length %}
-                {{ common_count }}
-            </span>
+            <span class="stat-number">{{ common_count }}</span>
         </div>
         <div class="stat-item">
             <h3>Rare</h3>
-            <span class="stat-number">
-                {% set rare_count = inventory|selectattr('rarity', 'equalto', 'rare')|list|length %}
-                {{ rare_count }}
-            </span>
+            <span class="stat-number">{{ rare_count }}</span>
         </div>
         <div class="stat-item">
             <h3>Epic</h3>
-            <span class="stat-number">
-                {% set epic_count = inventory|selectattr('rarity', 'equalto', 'epic')|list|length %}
-                {{ epic_count }}
-            </span>
+            <span class="stat-number">{{ epic_count }}</span>
         </div>
         <div class="stat-item">
             <h3>Legendary</h3>
-            <span class="stat-number">
-                {% set legendary_count = inventory|selectattr('rarity', 'equalto', 'legendary')|list|length %}
-                {{ legendary_count }}
-            </span>
+            <span class="stat-number">{{ legendary_count }}</span>
         </div>
     </div>
 

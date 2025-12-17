@@ -15,7 +15,11 @@ class User(db.Model):
     clicks = db.Column(db.Integer, default=0)
     coins = db.Column(db.Integer, default=0)
     pulls = db.Column(db.Integer, default=0)
-    # Time tracking tools
+
+    avatar = db.Column(db.String(50), default='default.png')
+    bio = db.Column(db.String(200), default='A marine creature collector')
+    pity_counter = db.Column(db.Integer, default=0) 
+    legendary_pity = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     

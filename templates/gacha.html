@@ -1,7 +1,3 @@
-<!-- ============================================ -->
-<!-- UPDATED gacha.html -->
-<!-- ============================================ -->
-
 {% extends "base.html" %}
 
 {% block content %}
@@ -13,25 +9,37 @@
             <h3>Your Coins: <span id="gacha-coins">{{ coins }}</span></h3>
         </div>
     </div>
-    
+
+    <!-- Pity Counter Display -->
+    <div class="pity-display">
+        <div class="pity-item">
+            <span class="pity-label">Epic Pity:</span>
+            <span class="pity-value" id="pity-counter">{{ pity_counter }}/10</span>
+        </div>
+        <div class="pity-item">
+            <span class="pity-label">Legendary Pity:</span>
+            <span class="pity-value" id="legendary-pity">{{ legendary_pity }}/80</span>
+        </div>
+    </div>
+
     <div class="gacha-middle-row">
         <div class="gacha-result-center">
-            <!-- This is where the spinning animation will appear -->
-            <div id="gacha-result">
-                <div class="ready-state">
-                    <p>🌊 Ready to pull? 🌊</p>
-                </div>
-            </div>
+            <div id="gacha-result"></div>
         </div>
         <div class="gacha-info">
             <p>1x Pull: 5 coins</p>
             <p>10x Pull: 50 coins</p>
+            <p style="font-size: 14px; color: #4fc3f7; margin-top: 10px;">
+                💎 Guaranteed epic every 10 pulls<br>
+                👑 Guaranteed legendary every 80 pulls
+            </p>
         </div>
     </div>
 
     <div class="gacha-pull">
         <button id="pull-single" class="gacha-button">1x Pull</button>
         <button id="pull-multi" class="gacha-button">10x Pull</button>
+        <div id="gacha-result"></div>
     </div>
 </div>
 {% endblock %}
@@ -41,12 +49,13 @@
 <script>
     const STATIC_BASE_URL = "{{ url_for('static', filename='') }}";
 
-    // Helper function to create the HTML string for a creature card with an image
     function createCreatureCard(creature, isMini = false) {
         const imageUrl = STATIC_BASE_URL + creature.image;
+        const pityBadge = creature.pity ? '<span class="pity-badge">✨ PITY!</span>' : '';
         
         let cardHtml = `
             <div class="creature-card ${creature.rarity} ${isMini ? 'mini' : ''}">
+                ${pityBadge}
                 <div class="creature-image-gacha">
                     <img src="${imageUrl}" alt="${creature.name}">
                 </div>
@@ -58,58 +67,16 @@
         return cardHtml;
     }
 
-    // Show spinning animation
-    function showSpinning() {
-        $('#gacha-result').html(`
-            <div class="spinning-container">
-                <div class="spinner">🌊</div>
-                <p class="rolling-text">Rolling...</p>
-            </div>
-        `);
-    }
-
-    // Show single pull result with reveal animation
-    function showSingleResult(creature, coins) {
-        const cardHtml = `
-            <div class="gacha-result-card reveal-animation">
-                <h3>You got a ${creature.name}!</h3>
-                ${createCreatureCard(creature)}
-                <p>Added to your inventory!</p>
-            </div>
-        `;
-        $('#gacha-result').html(cardHtml);
-        $('#gacha-coins').text(coins);
-    }
-
-    // Show multi pull results
-    function showMultiResult(creatures, coins) {
-        let resultHtml = `
-            <div class="multi-result reveal-animation">
-                <h3>10x Pull Results:</h3>
-                <div class="creatures-grid">
-        `;
-        
-        creatures.forEach(creature => {
-            resultHtml += createCreatureCard(creature, true); 
-        });
-        
-        resultHtml += '</div></div>';
-        $('#gacha-result').html(resultHtml);
-        $('#gacha-coins').text(coins);
+    function updatePityDisplay(pityCounter, legendaryPity) {
+        $('#pity-counter').text(pityCounter + '/10');
+        $('#legendary-pity').text(legendaryPity + '/80');
     }
 
     $(document).ready(function() {
         console.log("Gacha page loaded");
         
-        // --- Single Pull Logic ---
         $('#pull-single').click(function() {
             console.log("Single pull clicked");
-            
-            // Show spinning animation immediately
-            showSpinning();
-            
-            // Disable buttons during pull
-            $('#pull-single, #pull-multi').prop('disabled', true);
             
             $.ajax({
                 url: '/pull_gacha',
@@ -120,10 +87,10 @@
                     console.log("Single pull success:", data);
                     if (data.success) {
                         $('#gacha-coins').text(data.coins);
+                        updatePityDisplay(data.pity_counter, data.legendary_pity);
                         
                         const creature = data.creature;
                         
-                        // Use the helper function to build the card HTML with the image
                         const cardHtml = `
                             <div class="gacha-result-card">
                                 <h3>You got a ${creature.name}!</h3>
@@ -143,23 +110,13 @@
                 },
                 error: function(xhr, status, error) {
                     console.error("Single pull error:", error);
-                    setTimeout(() => {
-                        $('#gacha-result').html(`<div class="error-message">Error: ${error}</div>`);
-                        $('#pull-single, #pull-multi').prop('disabled', false);
-                    }, 2000);
+                    $('#gacha-result').html(`<div class="error-message">Error: ${error}</div>`);
                 }
             });
         });
 
-        // --- Multi Pull Logic ---
         $('#pull-multi').click(function() {
             console.log("Multi pull clicked");
-            
-            // Show spinning animation
-            showSpinning();
-            
-            // Disable buttons during pull
-            $('#pull-single, #pull-multi').prop('disabled', true);
             
             $.ajax({
                 url: '/pull_gacha',
@@ -170,11 +127,11 @@
                     console.log("Multi pull success:", data);
                     if (data.success) {
                         $('#gacha-coins').text(data.coins);
+                        updatePityDisplay(data.pity_counter, data.legendary_pity);
                         
                         let resultHtml = '<div class="multi-result"><h3>10x Pull Results:</h3><div class="creatures-grid">';
                         
                         data.creatures.forEach(creature => {
-                            // Use the helper function to build mini-cards with images
                             resultHtml += createCreatureCard(creature, true); 
                         });
                         
@@ -191,10 +148,7 @@
                 },
                 error: function(xhr, status, error) {
                     console.error("Multi pull error:", error);
-                    setTimeout(() => {
-                        $('#gacha-result').html(`<div class="error-message">Error: ${error}</div>`);
-                        $('#pull-single, #pull-multi').prop('disabled', false);
-                    }, 2000);
+                    $('#gacha-result').html(`<div class="error-message">Error: ${error}</div>`);
                 }
             });
         });

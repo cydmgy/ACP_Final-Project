@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="profile-container">
+    <h2>Your Profile</h2>
+    
+    <div class="profile-layout">
+        <!-- Left: Profile Info -->
+        <div class="profile-card">
+            <div class="avatar-display">
+                <div class="avatar-icon">{{ user.avatar.split('.')[0]|upper }}</div>
+            </div>
+            <h3>{{ user.username }}</h3>
+            <p class="user-bio">{{ user.bio }}</p>
+            <p class="member-since">Member since: {{ user.created_at.strftime('%b %Y') }}</p>
+        </div>
+
+        <!-- Right: Stats and Edit Form -->
+        <div class="profile-right">
+            <!-- Stats Section -->
+            <div class="stats-section">
+                <h3>Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">Total Clicks</span>
+                        <span class="stat-value">{{ user.clicks }}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Total Coins</span>
+                        <span class="stat-value">{{ user.coins }}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Total Pulls</span>
+                        <span class="stat-value">{{ user.pulls }}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Creatures</span>
+                        <span class="stat-value">{{ total_creatures }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements Section -->
+            <div class="achievements-section">
+                <h3>Collection Progress</h3>
+                <div class="achievement-list">
+                    <div class="achievement-item {% if rare_count >= 5 %}completed{% endif %}">
+                        <span class="achievement-icon">⭐</span>
+                        <div class="achievement-info">
+                            <strong>Rare Collector</strong>
+                            <p>Collect 5 rare creatures ({{ rare_count }}/5)</p>
+                        </div>
+                    </div>
+                    <div class="achievement-item {% if epic_count >= 3 %}completed{% endif %}">
+                        <span class="achievement-icon">💎</span>
+                        <div class="achievement-info">
+                            <strong>Epic Hunter</strong>
+                            <p>Collect 3 epic creatures ({{ epic_count }}/3)</p>
+                        </div>
+                    </div>
+                    <div class="achievement-item {% if legendary_count >= 1 %}completed{% endif %}">
+                        <span class="achievement-icon">👑</span>
+                        <div class="achievement-info">
+                            <strong>Legendary Master</strong>
+                            <p>Collect 1 legendary creature ({{ legendary_count }}/1)</p>
+                        </div>
+                    </div>
+                    <div class="achievement-item {% if completed_missions >= 5 %}completed{% endif %}">
+                        <span class="achievement-icon">🎯</span>
+                        <div class="achievement-info">
+                            <strong>Mission Veteran</strong>
+                            <p>Complete 5 missions ({{ completed_missions }}/5)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Profile Form -->
+            <div class="edit-profile-section">
+                <h3>Edit Profile</h3>
+                <form method="POST" action="{{ url_for('profile') }}">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="form-group">
+                        {{ form.avatar.label }}
+                        {{ form.avatar(class="form-control") }}
+                    </div>
+                    
+                    <div class="form-group">
+                        {{ form.bio.label }}
+                        {{ form.bio(class="form-control", rows="3") }}
+                    </div>
+                    
+                    {{ form.submit(class="btn btn-primary ocean-button") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
