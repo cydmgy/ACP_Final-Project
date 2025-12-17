@@ -382,6 +382,50 @@ def admin_creatures():
 def admin_missions():
     return render_template('admin_missions.html', missions=Mission.query.order_by(Mission.order).all())
 
+@app.route("/creatures/export")
+@admin_required
+def export_creatures():
+    creatures = Creature.query.order_by(Creature.rarity).all()
+
+    data = []
+    for c in creatures:
+        data.append({
+            "name": c.name,
+            "rarity": c.rarity,
+            "probability": c.probability
+        })
+
+    json_data = json.dumps(data, indent=4)
+
+    return Response(
+        json_data,
+        mimetype="application/json",
+        headers={"Content-Disposition": "attachment; filename=creatures.json"}
+    )
+    
+@app.route("/creatures/import", methods=["POST"])
+@admin_required
+def import_creatures():
+    file = request.files.get("json_file")
+
+    if not file:
+        flash("No file uploaded", "error")
+        return redirect(url_for("admin_creatures"))
+
+    data = json.load(file)
+
+    for item in data:
+        creature = Creature(
+            name=item.get("name"),
+            rarity=item.get("rarity"),
+            probability=item.get("probability")
+        )
+        db.session.add(creature)
+
+    db.session.commit()
+    flash("Creatures imported successfully!", "success")
+    return redirect(url_for("admin_creatures"))
+
 @app.route('/admin/creatures/new', methods=['GET', 'POST'])
 @admin_required
 def new_creature():

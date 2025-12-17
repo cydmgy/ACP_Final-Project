@@ -3,9 +3,25 @@
 {% block content %}
 <div class="admin-container">
     <h2>Manage Marine Creatures</h2>
-    
-    <div class="admin-actions">
-        <a href="{{ url_for('new_creature') }}" class="btn btn-primary">Add New Creature</a>
+
+    <div class="admin-actions" style="display:flex; gap:20px; margin-bottom:20px;">
+
+        <!-- IMPORT -->
+        <form action="{{ url_for('import_creatures') }}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="json_file" accept="application/json" required>
+            <button type="submit" class="btn btn-primary">Import Creatures</button>
+        </form>
+
+        <!-- ADD -->
+        <a href="{{ url_for('new_creature') }}" class="btn btn-primary">
+            Add New Creature
+        </a>
+
+        <!-- EXPORT -->
+        <a href="{{ url_for('export_creatures') }}" class="btn btn-primary">
+            Export Creatures (JSON)
+        </a>
+
     </div>
 
     <table class="admin-table">
@@ -14,7 +30,6 @@
                 <th>Name</th>
                 <th>Rarity</th>
                 <th>Probability</th>
-                {# REMOVED: <th>Status</th> #}
                 <th>Actions</th>
             </tr>
         </thead>
@@ -22,15 +37,21 @@
             {% for creature in creatures %}
             <tr data-creature-id="{{ creature.creature_id }}">
                 <td>{{ creature.name }}</td>
-                <td><span class="rarity {{ creature.rarity }}">{{ creature.rarity|title }}</span></td>
+                <td>
+                    <span class="rarity {{ creature.rarity }}">
+                        {{ creature.rarity|title }}
+                    </span>
+                </td>
                 <td>{{ "%.2f"|format(creature.probability * 100) }}%</td>
                 <td>
-                    <a href="{{ url_for('edit_creature', creature_id=creature.creature_id) }}" class="btn btn-edit">Edit</a>
-                    
-                    {# The only action left is Delete (old activate/deactivate logic removed) #}
-                    <form method="POST" action="{{ url_for('delete_creature', creature_id=creature.creature_id) }}" style="display:inline;">
-                        <button type="submit" 
-                                class="btn btn-delete" 
+                    <a href="{{ url_for('edit_creature', creature_id=creature.creature_id) }}"
+                       class="btn btn-edit">Edit</a>
+
+                    <form method="POST"
+                          action="{{ url_for('delete_creature', creature_id=creature.creature_id) }}"
+                          style="display:inline;">
+                        <button type="submit"
+                                class="btn btn-delete"
                                 onclick="return confirm('Are you sure you want to permanently delete the creature {{ creature.name }}? This cannot be undone.');">
                             Delete
                         </button>
