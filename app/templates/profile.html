@@ -8,11 +8,21 @@
         <!-- Left: Profile Info -->
         <div class="profile-card">
             <div class="avatar-display">
-                <div class="avatar-icon">{{ user.avatar.split('.')[0]|upper }}</div>
+                <div class="avatar-icon">
+                    {{ user.avatar.split('.')[0]|upper }}
+                </div>
+                <img
+                    src="{{ url_for('static', filename='avatars/' ~ user.avatar) }}"
+                    alt="Avatar"
+                    class="avatar-image"
+                />
             </div>
+
             <h3>{{ user.username }}</h3>
             <p class="user-bio">{{ user.bio }}</p>
-            <p class="member-since">Member since: {{ user.created_at.strftime('%b %Y') }}</p>
+            <p class="member-since">
+                Member since: {{ user.created_at.strftime('%b %Y') }}
+            </p>
         </div>
 
         <!-- Right: Stats and Edit Form -->

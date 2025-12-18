@@ -23,12 +23,12 @@ class ForgotPasswordForm(FlaskForm):
 
 class ProfileForm(FlaskForm):
     avatar = SelectField('Avatar', choices=[
-        ('default.png', '🐠 Default Fish'),
-        ('turtle.png', '🐢 Sea Turtle'),
-        ('octopus.png', '🐙 Octopus'),
-        ('dolphin.png', '🐬 Dolphin'),
-        ('whale.png', '🐋 Whale'),
-        ('shark.png', '🦈 Shark')
+        ('B1.png', 'B1'),
+        ('B2.png', 'B2'),
+        ('B3.png', 'B3'),
+        ('G1.png', 'G1'),
+        ('G2.png', 'G2'),
+        ('G3.png', 'G3')
     ], validators=[DataRequired()])
     bio = TextAreaField('Bio', validators=[Length(max=200)])
     submit = SubmitField('Update Profile')
