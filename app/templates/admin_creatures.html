@@ -5,7 +5,7 @@
     <h2>Manage Marine Creatures</h2>
     
     <div class="admin-actions">
-        <a href="{{ url_for('new_creature') }}" class="btn btn-primary">Add New Creature</a>
+        <a href="{{ url_for('admin.new_creature') }}" class="btn btn-primary">Add New Creature</a>
     </div>
 
     <table class="admin-table">
@@ -25,10 +25,10 @@
                 <td><span class="rarity {{ creature.rarity }}">{{ creature.rarity|title }}</span></td>
                 <td>{{ "%.2f"|format(creature.probability * 100) }}%</td>
                 <td>
-                    <a href="{{ url_for('edit_creature', creature_id=creature.creature_id) }}" class="btn btn-edit">Edit</a>
+                    <a href="{{ url_for('admin.edit_creature', creature_id=creature.creature_id) }}" class="btn btn-edit">Edit</a>
                     
                     {# The only action left is Delete (old activate/deactivate logic removed) #}
-                    <form method="POST" action="{{ url_for('delete_creature', creature_id=creature.creature_id) }}" style="display:inline;">
+                    <form method="POST" action="{{ url_for('admin.delete_creature', creature_id=creature.creature_id) }}" style="display:inline;">
                         <button type="submit" 
                                 class="btn btn-delete" 
                                 onclick="return confirm('Are you sure you want to permanently delete the creature {{ creature.name }}? This cannot be undone.');">

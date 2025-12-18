@@ -1,10 +1,11 @@
-from models import db, User, Creature, Mission
+from app.models import User, Creature, Mission
+from app.database import db
 from werkzeug.security import generate_password_hash
 
 def initialize_default_data():
+    """Initialize default creatures and missions if they don't exist."""
     if not Creature.query.first(): 
         print("Initializing default creatures...")
-        # Adjusted probabilities: Legendaries are now MUCH rarer
         
         defaults = [
         # Common - 60% total (0.075 each = 8 creatures)
@@ -53,6 +54,7 @@ def initialize_default_data():
     db.session.commit()
     
 def create_default_admin():
+    """Create default admin user if it doesn't exist."""
     if not User.query.filter_by(username='admin').first():
         print("Creating default admin...")
         admin = User(

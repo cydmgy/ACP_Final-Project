@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <title>Sea Life Gacha</title>
 </head>
 <body>
-    {% set auth_endpoints = ['auth', 'login', 'register', 'forgot_password'] %}
+    {% set auth_endpoints = ['auth.auth_page', 'auth.login', 'auth.register', 'auth.forgot_password'] %}
     {% set hide_sidebar = request.endpoint in auth_endpoints %}
     <div class="container {% if hide_sidebar %}auth-mode{% endif %}">
         
@@ -16,20 +16,20 @@
             <h2>Sea Life Gacha</h2>
             <ul>
                 {% if session.get('user_id') and session.get('role') != 'admin' %}
-                    <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}">Home</a></li>
-                    <li><a href="{{ url_for('gacha') }}" class="{% if request.endpoint == 'gacha' %}active{% endif %}">Gacha</a></li>
-                    <li><a href="{{ url_for('inventory') }}" class="{% if request.endpoint == 'inventory' %}active{% endif %}">Inventory</a></li>
-                    <li><a href="{{ url_for('profile') }}" class="{% if request.endpoint == 'profile' %}active{% endif %}">Profile</a></li>
-                    <li><a href="{{ url_for('logout') }}" class="logout-link">Log Out</a></li>    
+                    <li><a href="{{ url_for('game.home') }}" class="{% if request.endpoint == 'game.home' %}active{% endif %}">Home</a></li>
+                    <li><a href="{{ url_for('game.gacha') }}" class="{% if request.endpoint == 'game.gacha' %}active{% endif %}">Gacha</a></li>
+                    <li><a href="{{ url_for('game.inventory') }}" class="{% if request.endpoint == 'game.inventory' %}active{% endif %}">Inventory</a></li>
+                    <li><a href="{{ url_for('profile.profile') }}" class="{% if request.endpoint == 'profile.profile' %}active{% endif %}">Profile</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" class="logout-link">Log Out</a></li>    
                 {% endif %}
             </ul>
 
             {% if session.get('role') == 'admin' %}
                 <p class="admin-label" style="font-size: 0.9em; font-weight: bold; color: #a0d8f0; padding: 0 15px;">Admin Tools</p>
                 <ul>
-                    <li><a href="{{ url_for('admin_creatures') }}" class="{% if request.endpoint in ['admin_creatures', 'new_creature', 'edit_creature'] %}active{% endif %}" title="Edit Gacha rates and creatures">Manage Creatures</a></li>
-                    <li><a href="{{ url_for('admin_missions') }}" class="{% if request.endpoint in ['admin_missions', 'new_mission', 'edit_mission'] %}active{% endif %}" title="Edit Missions and Rewards">Manage Missions</a></li>
-                    <li><a href="{{ url_for('logout') }}" class="logout-link">Log Out</a></li>
+                    <li><a href="{{ url_for('admin.admin_creatures') }}" class="{% if request.endpoint in ['admin.admin_creatures', 'admin.new_creature', 'admin.edit_creature'] %}active{% endif %}" title="Edit Gacha rates and creatures">Manage Creatures</a></li>
+                    <li><a href="{{ url_for('admin.admin_missions') }}" class="{% if request.endpoint in ['admin.admin_missions', 'admin.new_mission', 'admin.edit_mission'] %}active{% endif %}" title="Edit Missions and Rewards">Manage Missions</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}" class="logout-link">Log Out</a></li>
                 </ul>
             {% endif %}
 

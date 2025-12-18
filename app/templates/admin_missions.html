@@ -6,14 +6,14 @@
 
 <div class="admin-actions" style="display:flex; gap:20px; margin-bottom:20px;">
     
-    <form action="{{ url_for('import_missions') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ url_for('admin.import_missions') }}" method="POST" enctype="multipart/form-data">
         <input type="file" name="json_file" accept="application/json" required>
         <button type="submit" class="btn btn-primary">Import Missions</button>
     </form>
 
-    <a href="{{ url_for('new_mission') }}" class="btn btn-primary">Add New Mission</a>
+    <a href="{{ url_for('admin.new_mission') }}" class="btn btn-primary">Add New Mission</a>
 
-    <a href="{{ url_for('export_missions') }}" class="btn btn-primary">
+    <a href="{{ url_for('admin.export_missions') }}" class="btn btn-primary">
         Export Missions (JSON)
     </a>
 
@@ -40,10 +40,10 @@
                 <td>{{ mission.reward }} coins</td>
                 <td>{{ mission.order }}</td>
                 <td>
-                    <a href="{{ url_for('edit_mission', mission_id=mission.mission_id) }}" class="btn btn-edit">Edit</a>
+                    <a href="{{ url_for('admin.edit_mission', mission_id=mission.mission_id) }}" class="btn btn-edit">Edit</a>
                     
                     {# The only action left is Delete (old activate/deactivate logic removed) #}
-                    <form method="POST" action="{{ url_for('delete_mission', mission_id=mission.mission_id) }}" style="display:inline;">
+                    <form method="POST" action="{{ url_for('admin.delete_mission', mission_id=mission.mission_id) }}" style="display:inline;">
                         <button type="submit" 
                                 class="btn btn-delete" 
                                 onclick="return confirm('Are you sure you want to permanently delete the mission {{ mission.name }}? This cannot be undone.');">

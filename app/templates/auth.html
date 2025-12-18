@@ -5,7 +5,7 @@
     
     <div id="login-section">
         <h2>Log In</h2>
-        <form action="{{ url_for('login') }}" method="POST">
+        <form action="{{ url_for('auth.login') }}" method="POST">
             {{ login_form.hidden_tag() }} <!-- Security Token -->
             <div style="margin-bottom: 10px;">
                 {{ login_form.username(placeholder="Username", style="width: 100%; padding: 8px;", autocomplete="off") }}
@@ -23,7 +23,7 @@
 
     <div id="register-section" style="display: none;">
         <h2>Create Account</h2>
-        <form action="{{ url_for('register') }}" method="POST">
+        <form action="{{ url_for('auth.register') }}" method="POST">
             {{ register_form.hidden_tag() }}
             <div style="margin-bottom: 10px;">
                 {{ register_form.username(placeholder="Choose Username", style="width: 100%; padding: 8px;", autocomplete="off") }}
@@ -40,7 +40,7 @@
 
     <div id="forgot-section" style="display: none;">
         <h2>Reset Password</h2>
-        <form action="{{ url_for('forgot_password') }}" method="POST">
+        <form action="{{ url_for('auth.forgot_password') }}" method="POST">
             {{ forgot_form.hidden_tag() }}
             <div style="margin-bottom: 10px;">
                 {{ forgot_form.username(placeholder="Username", style="width: 100%; padding: 8px;", autocomplete="off") }}

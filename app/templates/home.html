@@ -83,7 +83,7 @@ $(document).ready(function() {
         }).fail(function(xhr, status, error) {
             // If session expired (401 Unauthorized), redirect to auth
             if (xhr.status === 401) {
-                window.location.href = "{{ url_for('auth') }}";
+                window.location.href = "{{ url_for('auth.auth_page') }}";
             } else {
                 console.error("Error:", error);
             }
