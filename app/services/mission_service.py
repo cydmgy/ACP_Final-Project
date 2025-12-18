@@ -5,7 +5,7 @@ from app.models import Mission, UserMission
 class MissionService:
     @staticmethod
     def get_all_missions():
-        return Mission.query.order_by(Mission.order).all()
+        return Mission.query.filter_by(active=True).order_by(Mission.order).all()
     
     @staticmethod
     def check_and_complete_missions(user, current_clicks):

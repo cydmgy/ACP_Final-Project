@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, IntegerField, FloatField, SelectField, SubmitField, TextAreaField
+from wtforms import StringField, PasswordField, IntegerField, FloatField, SelectField, SubmitField, TextAreaField, BooleanField
 from wtforms.validators import DataRequired, Length, NumberRange, Optional
 
 # --- Authentication Forms ---
@@ -46,6 +46,7 @@ class CreatureForm(FlaskForm):
     description = TextAreaField('Description', validators=[DataRequired()]) 
     image = StringField('Image Filename (e.g. shark.png)', validators=[Optional()]) 
     probability = FloatField('Probability (0.0001 - 1.0)', validators=[DataRequired(), NumberRange(min=0.0001, max=1.0)])
+    active = BooleanField('Active', default=True) 
     submit = SubmitField('Save Creature')
 
 class MissionForm(FlaskForm):
@@ -54,4 +55,5 @@ class MissionForm(FlaskForm):
     target = IntegerField('Target (Clicks)', validators=[DataRequired(), NumberRange(min=1)])
     reward = IntegerField('Reward (Coins)', validators=[DataRequired(), NumberRange(min=0)])
     order = IntegerField('Display Order (Lower is first)', default=0, validators=[DataRequired(), NumberRange(min=0)]) 
+    active = BooleanField('Active', default=True)  
     submit = SubmitField('Save Mission')

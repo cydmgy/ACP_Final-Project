@@ -4,8 +4,6 @@ import os
 
 def create_app():
     app = Flask(__name__)
-    
-    # Configuration directly here (no config.py needed)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'secret_key'
     
     # Database configuration
@@ -23,10 +21,12 @@ def create_app():
     from app.routes.game import game_bp
     from app.routes.admin import admin_bp
     from app.routes.profile import profile_bp
+    from app.routes.api import api_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(game_bp)
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(profile_bp)
+    app.register_blueprint(api_bp)
     
     return app

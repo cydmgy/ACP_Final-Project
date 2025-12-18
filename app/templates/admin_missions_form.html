@@ -32,6 +32,11 @@
             {{ form.order(class="form-control", style="width: 100%; padding: 8px; box-sizing: border-box;") }}
         </div>
 
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+            {{ form.active(style="width: 20px; height: 20px;") }}
+            {{ form.active.label(style="font-weight: bold; color: #333;") }}
+        </div>
+
         {{ form.submit(class="btn btn-primary ocean-button", style="margin-top: 10px;") }}
     </form>
     

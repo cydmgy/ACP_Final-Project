@@ -29,6 +29,7 @@
                 <ul>
                     <li><a href="{{ url_for('admin.admin_creatures') }}" class="{% if request.endpoint in ['admin.admin_creatures', 'admin.new_creature', 'admin.edit_creature'] %}active{% endif %}" title="Edit Gacha rates and creatures">Manage Creatures</a></li>
                     <li><a href="{{ url_for('admin.admin_missions') }}" class="{% if request.endpoint in ['admin.admin_missions', 'admin.new_mission', 'admin.edit_mission'] %}active{% endif %}" title="Edit Missions and Rewards">Manage Missions</a></li>
+                    <li><a href="{{ url_for('admin.admin_announcements') }}" class="{% if request.endpoint in ['admin.admin_announcements', 'admin.new_announcement', 'admin.edit_announcement'] %}active{% endif %}" title="Broadcast messages to all users">Manage Announcements</a></li>
                     <li><a href="{{ url_for('auth.logout') }}" class="logout-link">Log Out</a></li>
                 </ul>
             {% endif %}

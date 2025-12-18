@@ -31,7 +31,7 @@ class GachaService:
         user.coins -= cost
         user.pulls += (10 if pull_type == 'multi' else 1)
         
-        creatures = Creature.query.all()
+        creatures = Creature.query.filter_by(active=True).all()
         if not creatures:
             return {'success': False, 'message': 'No creatures in database'}
         

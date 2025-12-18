@@ -30,7 +30,8 @@ def home():
         coins=user.coins,
         missions=MissionService.get_all_missions(),
         completed_missions=user_data['completed_missions'],
-        pulls=user.pulls)
+        pulls=user.pulls,
+        has_unread_announcements=user_data['has_unread_announcements'])
 
 
 @game_bp.route('/click', methods=['POST'])

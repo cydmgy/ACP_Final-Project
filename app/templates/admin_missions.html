@@ -4,22 +4,20 @@
 <div class="admin-container">
     <h2>Manage Missions</h2>
 
-<div class="admin-actions" style="display:flex; gap:20px; margin-bottom:20px;">
-    
-    <form action="{{ url_for('admin.import_missions') }}" method="POST" enctype="multipart/form-data">
-        <input type="file" name="json_file" accept="application/json" required>
-        <button type="submit" class="btn btn-primary">Import Missions</button>
-    </form>
+    <div class="admin-actions" style="display:flex; gap:20px; margin-bottom:20px;">
+        <form action="{{ url_for('admin.import_missions') }}" method="POST" enctype="multipart/form-data">
+            <input type="file" name="json_file" accept="application/json" required>
+            <button type="submit" class="btn btn-primary">Import Missions</button>
+        </form>
 
-    <a href="{{ url_for('admin.new_mission') }}" class="btn btn-primary">Add New Mission</a>
+        <a href="{{ url_for('admin.new_mission') }}" class="btn btn-primary">Add New Mission</a>
 
-    <a href="{{ url_for('admin.export_missions') }}" class="btn btn-primary">
-        Export Missions (JSON)
-    </a>
+        <a href="{{ url_for('admin.export_missions') }}" class="btn btn-primary">
+            Export Missions (JSON)
+        </a>
+    </div>
 
-</div>
-
-    <table class="admin-table">
+    <table id="missions-table" class="admin-table">
         <thead>
             <tr>
                 <th>Name</th>
@@ -27,23 +25,54 @@
                 <th>Target</th>
                 <th>Reward</th>
                 <th>Order</th>
-                {# REMOVED: <th>Active</th> #}
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             {% for mission in missions %}
-            <tr data-mission-id="{{ mission.mission_id }}">
+            <tr id="mission-{{ mission.mission_id }}" data-mission-id="{{ mission.mission_id }}">
                 <td>{{ mission.name }}</td>
                 <td>{{ mission.description }}</td>
                 <td>{{ mission.target }}</td>
                 <td>{{ mission.reward }} coins</td>
                 <td>{{ mission.order }}</td>
+                
+                <!-- Status Column -->
                 <td>
+                    {% if mission.active %}
+                    <span class="badge" style="background-color: #4caf50; color: white; padding: 5px 10px; border-radius: 12px;">
+                        Active
+                    </span>
+                    {% else %}
+                    <span class="badge" style="background-color: #f44336; color: white; padding: 5px 10px; border-radius: 12px;">
+                        Inactive
+                    </span>
+                    {% endif %}
+                </td>
+                
+                <td>
+                    <!-- Toggle Button with anchor -->
+                    <form method="POST" 
+                          action="{{ url_for('admin.toggle_mission', mission_id=mission.mission_id) }}#mission-{{ mission.mission_id }}"
+                          style="display:inline;">
+                        {% if mission.active %}
+                        <button type="submit" class="btn btn-warning" style="background-color: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            Deactivate
+                        </button>
+                        {% else %}
+                        <button type="submit" class="btn btn-success" style="background-color: #4caf50; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
+                            Activate
+                        </button>
+                        {% endif %}
+                    </form>
+                    
                     <a href="{{ url_for('admin.edit_mission', mission_id=mission.mission_id) }}" class="btn btn-edit">Edit</a>
                     
-                    {# The only action left is Delete (old activate/deactivate logic removed) #}
-                    <form method="POST" action="{{ url_for('admin.delete_mission', mission_id=mission.mission_id) }}" style="display:inline;">
+                    <!-- Delete form with anchor to table -->
+                    <form method="POST" 
+                          action="{{ url_for('admin.delete_mission', mission_id=mission.mission_id) }}#missions-table"
+                          style="display:inline;">
                         <button type="submit" 
                                 class="btn btn-delete" 
                                 onclick="return confirm('Are you sure you want to permanently delete the mission {{ mission.name }}? This cannot be undone.');">

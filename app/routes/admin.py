@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, Response
 from functools import wraps
 import json
+from datetime import datetime
 from app.database import db
-from app.models import User, Creature, Mission
+from app.models import User, Creature, Mission, Announcement
 from app.forms.forms import CreatureForm, MissionForm
 
 admin_bp = Blueprint('admin', __name__)
@@ -49,6 +50,7 @@ def new_creature():
             description=form.description.data, 
             image=form.image.data or None,
             probability=form.probability.data,
+            active=form.active.data 
         )
         db.session.add(new_creature)
         db.session.commit()
@@ -94,6 +96,21 @@ def delete_creature(creature_id):
     return redirect(url_for('admin.admin_creatures'))
 
 
+# ============= TOGGLE CREATURE STATUS =============
+
+@admin_bp.route('/creatures/toggle/<int:creature_id>', methods=['POST'])
+@admin_required
+def toggle_creature(creature_id):
+    """Toggle creature active status."""
+    creature = db.session.get(Creature, creature_id)
+    if creature:
+        creature.active = not creature.active
+        db.session.commit()
+        status = "activated" if creature.active else "deactivated"
+        flash(f'Creature "{creature.name}" {status}.', 'success')
+    return redirect(url_for('admin.admin_creatures'))
+
+
 # ============= MISSION MANAGEMENT =============
 
 @admin_bp.route('/missions')
@@ -115,7 +132,8 @@ def new_mission():
             description=form.description.data,
             target=form.target.data,
             reward=form.reward.data,
-            order=form.order.data, 
+            order=form.order.data,
+            active=form.active.data 
         )
         db.session.add(new_mission)
         db.session.commit()
@@ -161,6 +179,21 @@ def delete_mission(mission_id):
     return redirect(url_for('admin.admin_missions'))
 
 
+# ============= TOGGLE MISSION STATUS =============
+
+@admin_bp.route('/missions/toggle/<int:mission_id>', methods=['POST'])
+@admin_required
+def toggle_mission(mission_id):
+    """Toggle mission active status."""
+    mission = db.session.get(Mission, mission_id)
+    if mission:
+        mission.active = not mission.active
+        db.session.commit()
+        status = "activated" if mission.active else "deactivated"
+        flash(f'Mission "{mission.name}" {status}.', 'success')
+    return redirect(url_for('admin.admin_missions'))
+
+
 @admin_bp.route('/missions/export')
 @admin_required
 def export_missions():
@@ -173,7 +206,8 @@ def export_missions():
             "description": m.description,
             "target": m.target,
             "reward": m.reward,
-            "order": m.order
+            "order": m.order,
+            "active": m.active 
         })
     json_data = json.dumps(data, indent=4)
     return Response(
@@ -199,7 +233,8 @@ def import_missions():
             description=item.get("description"),
             target=item.get("target"),
             reward=item.get("reward"),
-            order=item.get("order")
+            order=item.get("order"),
+            active=item.get("active", True)  
         )
         db.session.add(mission)
     
@@ -207,46 +242,164 @@ def import_missions():
     flash("Missions imported successfully!", "success")
     return redirect(url_for("admin.admin_missions"))
 
+
 @admin_bp.route("/creatures/export")
 @admin_required
 def export_creatures():
+    """Export all creatures to JSON."""
     creatures = Creature.query.order_by(Creature.rarity).all()
-
     data = []
     for c in creatures:
         data.append({
             "name": c.name,
             "rarity": c.rarity,
-            "probability": c.probability
+            "probability": c.probability,
+            "active": c.active  
         })
-
+    
     json_data = json.dumps(data, indent=4)
-
+    
     return Response(
         json_data,
         mimetype="application/json",
         headers={"Content-Disposition": "attachment; filename=creatures.json"}
     )
 
+
 @admin_bp.route("/creatures/import", methods=["POST"])
 @admin_required
 def import_creatures():
+    """Import creatures from JSON file."""
     file = request.files.get("json_file")
-
+    
     if not file:
         flash("No file uploaded", "error")
-        return redirect(url_for("admin_creatures"))
-
+        return redirect(url_for("admin.admin_creatures"))
+    
     data = json.load(file)
-
+    
     for item in data:
         creature = Creature(
             name=item.get("name"),
             rarity=item.get("rarity"),
-            probability=item.get("probability")
+            probability=item.get("probability"),
+            active=item.get("active", True) 
         )
         db.session.add(creature)
-
+    
     db.session.commit()
     flash("Creatures imported successfully!", "success")
-    return redirect(url_for("admin_creatures"))
+    return redirect(url_for("admin.admin_creatures"))
+
+# ============= ANNOUNCEMENT MANAGEMENT =============
+
+@admin_bp.route('/announcements')
+@admin_required
+def admin_announcements():
+    """Display all announcements for admin management."""
+    announcements = Announcement.query.order_by(Announcement.created_at.desc()).all()
+    return render_template('admin_announcements.html', announcements=announcements)
+
+
+@admin_bp.route('/announcements/new', methods=['GET', 'POST'])
+@admin_required
+def new_announcement():
+    """Create a new announcement."""
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        is_active = 'is_active' in request.form
+        
+        if not title or not content:
+            flash('Title and content are required!', 'error')
+            return redirect(url_for('admin.new_announcement'))
+        
+        new_announcement = Announcement(
+            title=title,
+            content=content,
+            is_active=is_active,
+            created_at=datetime.utcnow()
+        )
+        
+        db.session.add(new_announcement)
+        db.session.commit()
+        flash(f'Announcement "{title}" created!', 'success')
+        return redirect(url_for('admin.admin_announcements'))
+    
+    return render_template('admin_announcements_form.html', title='New Announcement')
+
+
+@admin_bp.route('/announcements/edit/<int:announcement_id>', methods=['GET', 'POST'])
+@admin_required
+def edit_announcement(announcement_id):
+    """Edit an existing announcement."""
+    announcement = db.session.get(Announcement, announcement_id)
+    if not announcement:
+        flash('Announcement not found!', 'error')
+        return redirect(url_for('admin.admin_announcements'))
+    
+    if request.method == 'POST':
+        announcement.title = request.form.get('title')
+        announcement.content = request.form.get('content')
+        announcement.is_active = 'is_active' in request.form
+        
+        db.session.commit()
+        flash('Announcement updated!', 'success')
+        return redirect(url_for('admin.admin_announcements'))
+    
+    return render_template('admin_announcements_form.html', 
+                         announcement=announcement,
+                         title='Edit Announcement')
+
+
+@admin_bp.route('/announcements/delete/<int:announcement_id>', methods=['POST'])
+@admin_required
+def delete_announcement(announcement_id):
+    """Delete an announcement."""
+    announcement = db.session.get(Announcement, announcement_id)
+    if announcement:
+        try:
+            db.session.delete(announcement)
+            db.session.commit()
+            flash(f'Announcement "{announcement.title}" deleted successfully.', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error deleting announcement: {str(e)}', 'error')
+    else:
+        flash('Announcement not found.', 'error')
+    return redirect(url_for('admin.admin_announcements'))
+
+
+@admin_bp.route('/announcements/toggle/<int:announcement_id>', methods=['POST'])
+@admin_required
+def toggle_announcement(announcement_id):
+    """Toggle announcement active status."""
+    announcement = db.session.get(Announcement, announcement_id)
+    if announcement:
+        announcement.is_active = not announcement.is_active
+        db.session.commit()
+        status = "activated" if announcement.is_active else "deactivated"
+        flash(f'Announcement "{announcement.title}" {status}.', 'success')
+    return redirect(url_for('admin.admin_announcements'))
+
+
+# ============= ANNOUNCEMENT API (for users) =============
+
+@admin_bp.route('/api/announcements/active', methods=['GET'])
+def get_active_announcements():
+    """Get all active announcements for users."""
+    announcements = Announcement.query.filter_by(is_active=True)\
+        .order_by(Announcement.created_at.desc()).all()
+    
+    return json.dumps([announcement.to_dict() for announcement in announcements])
+
+
+@admin_bp.route('/api/announcements/latest', methods=['GET'])
+def get_latest_announcement():
+    """Get the latest active announcement."""
+    announcement = Announcement.query.filter_by(is_active=True)\
+        .order_by(Announcement.created_at.desc()).first()
+    
+    if announcement:
+        return json.dumps(announcement.to_dict())
+    return json.dumps({})

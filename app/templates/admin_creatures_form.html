@@ -16,6 +16,7 @@
             {{ form.description.label }}
             {{ form.description(style="width: 100%; padding: 8px; box-sizing: border-box; height: 100px;") }}
         </div>
+        
         <div>
             {{ form.rarity.label }}
             {{ form.rarity(style="width: 100%; padding: 8px; box-sizing: border-box;") }}
@@ -29,6 +30,11 @@
         <div>
             {{ form.probability.label }}
             {{ form.probability(style="width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px;", step="0.0001") }}
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+            {{ form.active(style="width: 20px; height: 20px;") }}
+            {{ form.active.label(style="font-weight: bold;") }}
         </div>
 
         {{ form.submit(class="btn btn-primary ocean-button", style="margin-top: 10px;") }}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="admin-container">
+    <h2>Announcements Management</h2>
+    
+    <div class="admin-header">
+        <a href="{{ url_for('admin.new_announcement') }}" class="btn btn-primary">
+            + New Announcement
+        </a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Content Preview</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for announcement in announcements %}
+                <tr>
+                    <td>{{ announcement.id }}</td>
+                    <td><strong>{{ announcement.title }}</strong></td>
+                    <td>{{ announcement.content[:50] }}{% if announcement.content|length > 50 %}...{% endif %}</td>
+                    <td>{{ announcement.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if announcement.is_active %}
+                            <span class="badge badge-success">Active</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="actions">
+                        <a href="{{ url_for('admin.edit_announcement', announcement_id=announcement.id) }}" 
+                           class="btn btn-sm btn-info">Edit</a>
+                        
+                        <form action="{{ url_for('admin.toggle_announcement', announcement_id=announcement.id) }}" 
+                              method="POST" style="display: inline;">
+                            {% if announcement.is_active %}
+                                <button type="submit" class="btn btn-sm btn-warning">Deactivate</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-sm btn-success">Activate</button>
+                            {% endif %}
+                        </form>
+                        
+                        <form action="{{ url_for('admin.delete_announcement', announcement_id=announcement.id) }}" 
+                              method="POST" style="display: inline;"
+                              onsubmit="return confirm('Are you sure you want to delete this announcement?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center">No announcements found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -2,10 +2,21 @@
 
 {% block content %}
 <div class="home-container">
-
+    <!-- Add notification button to header -->
     <div class="home-header">
         <h2>Click to Earn Coins!</h2>
         
+        <!-- Notification Bell -->
+        <div class="notification-container">
+            <button id="notification-bell" class="notification-bell">
+                🔔
+                {% if has_unread_announcements %}
+                <span class="notification-badge"></span>
+                {% endif %}
+            </button>
+        </div>
+    </div>
+
     <div class="stats-header">
         <div class="stat-card">
             <h3>Total Clicks</h3>
@@ -22,45 +33,61 @@
             <div class="stat-value" id="pull-counter">{{ coins // 20 }}</div>
         </div>
     </div>
-</div>
 
     <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-<div class="home-content">
-    <div class="click-area">
-        <button id="click-button" class="ocean-button">Click here</button>
-        <p>Every 5 clicks gives 1 coin!</p>
-    </div>
 
-    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-   
-    <div class="missions-section">
-    <div class="missions-panel">
-        <h2>Missions</h2>
-        <div class="missions-list">
-            {% for mission in missions %}
-            <div class="mission-item {% if mission.id in completed_missions %}completed{% endif %}">
-                <div class="mission-info">
-                    <h4>{{ mission.name }}</h4>
-                    <p>{{ mission.description }}</p>
-                </div>
-                <div class="mission-reward">
-                    <span class="reward-amount">+{{ mission.reward }} coins</span>
-                    {% if mission.mission_id in completed_missions %}
-                    <span class="completed-badge">✓ Completed</span>
-                    {% else %}
-                    <div class="progress">
-                        <div class="progress-bar" style="width: {{ (clicks / mission.target * 100) if mission.target > 0 else 0 }}%"></div>
-                        <span class="progress-text">{{ clicks }}/{{ mission.target }}</span>
+    <div class="home-content">
+        <div class="click-area">
+            <button id="click-button" class="ocean-button">Click here</button>
+            <p>Every 5 clicks gives 1 coin!</p>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+       
+        <div class="missions-section">
+            <div class="missions-panel">
+                <h2>Missions</h2>
+                <div class="missions-list">
+                    {% for mission in missions %}
+                    <div class="mission-item {% if mission.id in completed_missions %}completed{% endif %}">
+                        <div class="mission-info">
+                            <h4>{{ mission.name }}</h4>
+                            <p>{{ mission.description }}</p>
+                        </div>
+                        <div class="mission-reward">
+                            <span class="reward-amount">+{{ mission.reward }} coins</span>
+                            {% if mission.mission_id in completed_missions %}
+                            <span class="completed-badge">✓ Completed</span>
+                            {% else %}
+                            <div class="progress">
+                                <div class="progress-bar" style="width: {{ (clicks / mission.target * 100) if mission.target > 0 else 0 }}%"></div>
+                                <span class="progress-text">{{ clicks }}/{{ mission.target }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    {% endif %}
+                    {% endfor %}
                 </div>
             </div>
-            {% endfor %}
         </div>
     </div>
 </div>
+
+<!-- Announcements Modal -->
+<div id="announcements-modal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📢 Announcements</h3>
+            <button class="close-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="announcements-list">
+                <div class="loading">Loading announcements...</div>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -89,6 +116,96 @@ $(document).ready(function() {
             }
         });
     });
+    
+    // Notification system
+    const modal = $('#announcements-modal');
+    const bellBtn = $('#notification-bell');
+    const closeBtn = $('.close-modal');
+    
+    // Load announcements when modal opens
+    function loadAnnouncements() {
+        $.get('/api/announcements', function(data) {
+            const announcements = data; 
+            const container = $('#announcements-list');
+            
+            if (announcements.length === 0) {
+                container.html('<div class="no-announcements">No announcements yet.</div>');
+                return;
+            }
+            
+            let html = '';
+            announcements.forEach(ann => {
+                const date = new Date(ann.created_at);
+                const formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                const readClass = ann.is_read ? 'read' : 'unread';
+                
+                html += `
+                    <div class="announcement-item ${readClass}">
+                        <div class="announcement-header">
+                            <h4>${ann.title}</h4>
+                            <span class="announcement-date">${formattedDate}</span>
+                        </div>
+                        <div class="announcement-content">
+                            ${ann.content.replace(/\n/g, '<br>')}
+                        </div>
+                        <hr>
+                    </div>
+                `;
+            });
+            
+            container.html(html);
+            
+            // Mark all announcements as read when modal is opened
+            $.post('/api/announcements/mark-all-read', function(data) {
+                if (data.success) {
+                    $('.notification-badge').hide();
+                    $('.announcement-item').addClass('read').removeClass('unread');
+                }
+            });
+        }).fail(function(xhr, status, error) {
+            $('#announcements-list').html('<div class="error">Failed to load announcements: ' + error + '</div>');
+            console.error("API Error:", error, xhr.responseText);
+        });
+    }
+    
+    // Open modal
+    bellBtn.click(function() {
+        loadAnnouncements();
+        modal.show();
+    });
+    
+    // Close modal
+    closeBtn.click(function() {
+        modal.hide();
+    });
+    
+    // Close when clicking outside
+    $(window).click(function(event) {
+        if ($(event.target).is(modal)) {
+            modal.hide();
+        }
+    });
+    
+    // Check for new announcements every minute
+    function checkNewAnnouncements() {
+        $.get('/api/announcements/unread-count', function(data) {
+            const count = data.count;
+            if (count > 0) {
+                $('.notification-badge').show();
+            } else {
+                $('.notification-badge').hide();
+            }
+        }).fail(function(xhr) {
+            console.error("Failed to get unread count:", xhr.status);
+            $('.notification-badge').hide();
+        });
+    }
+    
+    // Check initially
+    checkNewAnnouncements();
+    
+    // Then check every 60 seconds
+    setInterval(checkNewAnnouncements, 60000);
 });
 </script>
 {% endblock %}
