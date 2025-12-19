@@ -74,8 +74,11 @@ project_root/
     - Pull creatures
     - View inventory and profile
 
-Admin
-    - Manage creatures, missions, and announcements
+## Admin Features
+    - Add, edit, and delete creatures/mission
+    - Activate or deactivate creatures/mission
+    - Manage missions, creature and announcements
+    - Import and export creature/mission data via JSON
 
 
 ## Instructions

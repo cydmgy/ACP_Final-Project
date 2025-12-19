@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="home-container">
-    <!-- Add notification button to header -->
+    <!-- Header with Notification -->
     <div class="home-header">
         <h2>Click to Earn Coins!</h2>
         
@@ -17,6 +17,7 @@
         </div>
     </div>
 
+    <!-- Stats Header -->
     <div class="stats-header">
         <div class="stat-card">
             <h3>Total Clicks</h3>
@@ -28,28 +29,27 @@
             <div class="stat-value" id="coin-counter">{{ coins }}</div>
         </div>
 
-        <div class="stat-card" id="pulls-stat-card">
+        <div class="stat-card">
             <h3>Available Pulls</h3>
-            <div class="stat-value" id="pull-counter">{{ coins // 20 }}</div>
+            <div class="stat-value" id="pull-counter">{{ coins // 5 }}</div>
         </div>
     </div>
 
-    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-
+    <!-- Main Content Grid -->
     <div class="home-content">
+        <!-- Click Area -->
         <div class="click-area">
-            <button id="click-button" class="ocean-button">Click here</button>
-            <p>Every 5 clicks gives 1 coin!</p>
+            <button id="click-button" class="ocean-button">Click Me!</button>
+            <p>Every 5 clicks = 1 coin</p>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-       
+        <!-- Missions Section -->
         <div class="missions-section">
             <div class="missions-panel">
-                <h2>Missions</h2>
+                <h2>📋 Missions</h2>
                 <div class="missions-list">
                     {% for mission in missions %}
-                    <div class="mission-item {% if mission.id in completed_missions %}completed{% endif %}">
+                    <div class="mission-item {% if mission.mission_id in completed_missions %}completed{% endif %}">
                         <div class="mission-info">
                             <h4>{{ mission.name }}</h4>
                             <p>{{ mission.description }}</p>
@@ -95,20 +95,20 @@
 $(document).ready(function() {
     console.log("Document ready - click script loaded");
     
+    // Click Button Handler
     $('#click-button').click(function() {
         $.post('/click', function(data) {
-            // Update Clicks and Coins
+            // Update counters
             $('#click-counter').text(data.clicks);
             $('#coin-counter').text(data.coins);
-            $('#pull-counter').text(Math.floor(data.coins / 20));
+            $('#pull-counter').text(Math.floor(data.coins / 5));
 
             // Handle Mission Completion
             if (data.coins_earned > 0) {
-                alert('Mission Complete! +' + data.coins_earned + ' coins!');
+                alert('🎉 Mission Complete! +' + data.coins_earned + ' coins!');
                 location.reload(); 
             }
         }).fail(function(xhr, status, error) {
-            // If session expired (401 Unauthorized), redirect to auth
             if (xhr.status === 401) {
                 window.location.href = "{{ url_for('auth.auth_page') }}";
             } else {
@@ -117,12 +117,12 @@ $(document).ready(function() {
         });
     });
     
-    // Notification system
+    // Notification System
     const modal = $('#announcements-modal');
     const bellBtn = $('#notification-bell');
     const closeBtn = $('.close-modal');
     
-    // Load announcements when modal opens
+    // Load announcements
     function loadAnnouncements() {
         $.get('/api/announcements', function(data) {
             const announcements = data; 
@@ -148,14 +148,14 @@ $(document).ready(function() {
                         <div class="announcement-content">
                             ${ann.content.replace(/\n/g, '<br>')}
                         </div>
-                        <hr>
+                        ${announcements.indexOf(ann) < announcements.length - 1 ? '<hr>' : ''}
                     </div>
                 `;
             });
             
             container.html(html);
             
-            // Mark all announcements as read when modal is opened
+            // Mark all as read
             $.post('/api/announcements/mark-all-read', function(data) {
                 if (data.success) {
                     $('.notification-badge').hide();
@@ -186,11 +186,10 @@ $(document).ready(function() {
         }
     });
     
-    // Check for new announcements every minute
+    // Check for new announcements
     function checkNewAnnouncements() {
         $.get('/api/announcements/unread-count', function(data) {
-            const count = data.count;
-            if (count > 0) {
+            if (data.count > 0) {
                 $('.notification-badge').show();
             } else {
                 $('.notification-badge').hide();
@@ -204,7 +203,7 @@ $(document).ready(function() {
     // Check initially
     checkNewAnnouncements();
     
-    // Then check every 60 seconds
+    // Check every 60 seconds
     setInterval(checkNewAnnouncements, 60000);
 });
 </script>

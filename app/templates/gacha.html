@@ -39,7 +39,6 @@
     <div class="gacha-pull">
         <button id="pull-single" class="gacha-button">1x Pull</button>
         <button id="pull-multi" class="gacha-button">10x Pull</button>
-        <div id="gacha-result"></div>
     </div>
 </div>
 {% endblock %}
@@ -49,18 +48,35 @@
 <script>
     const STATIC_BASE_URL = "{{ url_for('static', filename='') }}";
 
-    function createCreatureCard(creature, isMini = false) {
+    function createFlipCard(creature, isMini = false, delay = 0) {
         const imageUrl = STATIC_BASE_URL + creature.image;
         const pityBadge = creature.pity ? '<span class="pity-badge">✨ PITY!</span>' : '';
         
         let cardHtml = `
-            <div class="creature-card ${creature.rarity} ${isMini ? 'mini' : ''}">
-                ${pityBadge}
-                <div class="creature-image-gacha">
-                    <img src="${imageUrl}" alt="${creature.name}">
+            <div class="flip-card-container ${isMini ? 'mini' : ''}" style="animation-delay: ${delay}ms;">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <!-- Back of card (shown initially) -->
+                        <div class="flip-card-back">
+                            <div class="card-back-design">
+                                <div class="card-back-pattern"></div>
+                                <div class="card-back-shine"></div>
+                                <div class="card-back-text">?</div>
+                            </div>
+                        </div>
+                        <!-- Front of card (revealed after flip) -->
+                        <div class="flip-card-front">
+                            <div class="creature-card ${creature.rarity} ${isMini ? 'mini' : ''}">
+                                ${pityBadge}
+                                <div class="creature-image-gacha">
+                                    <img src="${imageUrl}" alt="${creature.name}">
+                                </div>
+                                <h4>${creature.name}</h4>
+                                <p class="rarity-text">${creature.rarity}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <h4>${creature.name}</h4>
-                <p class="rarity-text">${creature.rarity}</p>
             </div>
         `;
         
@@ -75,8 +91,12 @@
     $(document).ready(function() {
         console.log("Gacha page loaded");
         
+        // Single Pull Handler
         $('#pull-single').click(function() {
             console.log("Single pull clicked");
+            
+            // Disable button during animation
+            $(this).prop('disabled', true);
             
             $.ajax({
                 url: '/pull_gacha',
@@ -90,33 +110,44 @@
                         updatePityDisplay(data.pity_counter, data.legendary_pity);
                         
                         const creature = data.creature;
+                        const flipCardHtml = createFlipCard(creature, false, 0);
                         
-                        const cardHtml = `
-                            <div class="gacha-result-card">
-                                <h3>You got a ${creature.name}!</h3>
-                                ${createCreatureCard(creature)}
-                                <p>Added to your inventory!</p>
-                            </div>
-                        `;
+                        // Show only the card, no text
                         $('#gacha-result').html(`
                             <div class="single-pull-result">
-                                ${cardHtml}
+                                ${flipCardHtml}
                             </div>
                         `);
 
+                        // Trigger flip animation after a short delay
+                        setTimeout(() => {
+                            $('.flip-card-container').addClass('flipped');
+                        }, 500);
+
+                        // Re-enable button after animation
+                        setTimeout(() => {
+                            $('#pull-single').prop('disabled', false);
+                        }, 2000);
+
                     } else {
                         $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
+                        $('#pull-single').prop('disabled', false);
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error("Single pull error:", error);
                     $('#gacha-result').html(`<div class="error-message">Error: ${error}</div>`);
+                    $('#pull-single').prop('disabled', false);
                 }
             });
         });
 
+        // Multi Pull Handler (10x)
         $('#pull-multi').click(function() {
             console.log("Multi pull clicked");
+            
+            // Disable button during animation
+            $(this).prop('disabled', true);
             
             $.ajax({
                 url: '/pull_gacha',
@@ -129,26 +160,42 @@
                         $('#gacha-coins').text(data.coins);
                         updatePityDisplay(data.pity_counter, data.legendary_pity);
                         
-                        let resultHtml = '<div class="multi-result"><h3>10x Pull Results:</h3><div class="creatures-grid">';
+                        // Create grid with all cards (back side showing)
+                        let resultHtml = '<div class="multi-result"><div class="creatures-grid">';
                         
-                        data.creatures.forEach(creature => {
-                            resultHtml += createCreatureCard(creature, true); 
+                        data.creatures.forEach((creature, index) => {
+                            const delay = index * 500;
+                            resultHtml += createFlipCard(creature, true, delay);
                         });
                         
                         resultHtml += '</div></div>';
-                       $('#gacha-result').html(`
-                            <div class="multi-pull-result">
-                                ${resultHtml}
-                            </div>
-                        `);
                         
+                        $('#gacha-result').html(resultHtml);
+
+                        // Start flipping cards one by one
+                        setTimeout(() => {
+                            $('.flip-card-container').each(function(index) {
+                                const $card = $(this);
+                                setTimeout(() => {
+                                    $card.addClass('flipped');
+                                }, index * 500);
+                            });
+                        }, 500);
+
+                        // Re-enable button after all animations complete
+                        setTimeout(() => {
+                            $('#pull-multi').prop('disabled', false);
+                        }, 6000);
+
                     } else {
                         $('#gacha-result').html(`<div class="error-message">${data.message}</div>`);
+                        $('#pull-multi').prop('disabled', false);
                     }
                 },
                 error: function(xhr, status, error) {
                     console.error("Multi pull error:", error);
                     $('#gacha-result').html(`<div class="error-message">Error: ${error}</div>`);
+                    $('#pull-multi').prop('disabled', false);
                 }
             });
         });
