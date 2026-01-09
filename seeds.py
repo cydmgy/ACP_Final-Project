@@ -1,10 +1,55 @@
-from app.models import User, Creature, Mission
+from app.models import User, Creature, Mission, Banner, BannerCreature
 from app.database import db
 from werkzeug.security import generate_password_hash
+from datetime import datetime, timedelta
 
 def initialize_default_data():
     """Initialize default creatures and missions if they don't exist."""
-    if not Creature.query.first(): 
+    print("Checking database initialization...")
+    
+    # Check if we need to add the secret creature
+    secret_creature_name = "Abyssal Phantom"
+    secret_creature = Creature.query.filter_by(name=secret_creature_name).first()
+    
+    if not secret_creature:
+        print(f"Creating secret creature: {secret_creature_name}")
+        secret_creature = Creature(
+            name=secret_creature_name,
+            rarity="legendary",
+            image="images/Abyssal_Phantom.png",
+            probability=0.005,
+            description="A legendary phantom of the deep that only appears during special celestial alignments."
+        )
+        db.session.add(secret_creature)
+        db.session.commit() # Commit to get ID
+    
+    # Check if we need to add the banner
+    banner_name = "Abyssal Secrets"
+    if not Banner.query.filter_by(name=banner_name).first():
+        print(f"Creating banner: {banner_name}")
+        banner = Banner(
+            name=banner_name,
+            image="images/banner_abyssal.png",
+            start_date=datetime.utcnow(),
+            end_date=datetime.utcnow() + timedelta(days=15),
+            active=True,
+            description="Increased drop rate for Abyssal Phantom! Limited time only."
+        )
+        db.session.add(banner)
+        db.session.commit() # Commit to get ID
+        
+        # Link creature to banner
+        if secret_creature:
+            print(f"Linking {secret_creature_name} to {banner_name}")
+            banner_creature = BannerCreature(
+                banner_id=banner.banner_id,
+                creature_id=secret_creature.creature_id,
+                rate_multiplier=5.0 # 5x chance
+            )
+            db.session.add(banner_creature)
+            db.session.commit()
+
+    if not Creature.query.filter(Creature.name != secret_creature_name).first(): 
         print("Initializing default creatures...")
         
         defaults = [

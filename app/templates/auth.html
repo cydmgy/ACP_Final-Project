@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="auth-container" style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
-    
+<div class="auth-container"
+    style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+
     <div id="login-section">
         <h2>Log In</h2>
         <form action="{{ url_for('auth.login') }}" method="POST">
             {{ login_form.hidden_tag() }} <!-- Security Token -->
             <div style="margin-bottom: 10px;">
-                {{ login_form.username(placeholder="Username", style="width: 100%; padding: 8px;", autocomplete="off") }}
+                {{ login_form.username(placeholder="Username", style="width: 100%; padding: 8px;", autocomplete="off")
+                }}
             </div>
             <div style="margin-bottom: 10px;">
-                {{ login_form.password(placeholder="Password", style="width: 100%; padding: 8px;", autocomplete="off") }}
+                {{ login_form.password(placeholder="Password", style="width: 100%; padding: 8px;", autocomplete="off")
+                }}
             </div>
             {{ login_form.submit(class="ocean-button", style="width: 100%;") }}
         </form>
@@ -26,10 +29,12 @@
         <form action="{{ url_for('auth.register') }}" method="POST">
             {{ register_form.hidden_tag() }}
             <div style="margin-bottom: 10px;">
-                {{ register_form.username(placeholder="Choose Username", style="width: 100%; padding: 8px;", autocomplete="off") }}
+                {{ register_form.username(placeholder="Choose Username", style="width: 100%; padding: 8px;",
+                autocomplete="off") }}
             </div>
             <div style="margin-bottom: 10px;">
-                {{ register_form.password(placeholder="Choose Password", style="width: 100%; padding: 8px;", autocomplete="off") }}
+                {{ register_form.password(placeholder="Choose Password", style="width: 100%; padding: 8px;",
+                autocomplete="off") }}
             </div>
             {{ register_form.submit(class="ocean-button", style="width: 100%;") }}
         </form>
@@ -43,10 +48,12 @@
         <form action="{{ url_for('auth.forgot_password') }}" method="POST">
             {{ forgot_form.hidden_tag() }}
             <div style="margin-bottom: 10px;">
-                {{ forgot_form.username(placeholder="Username", style="width: 100%; padding: 8px;", autocomplete="off") }}
+                {{ forgot_form.username(placeholder="Username", style="width: 100%; padding: 8px;", autocomplete="off")
+                }}
             </div>
             <div style="margin-bottom: 10px;">
-                {{ forgot_form.new_password(placeholder="New Password", style="width: 100%; padding: 8px;", autocomplete="off") }}
+                {{ forgot_form.new_password(placeholder="New Password", style="width: 100%; padding: 8px;",
+                autocomplete="off") }}
             </div>
             {{ forgot_form.submit(class="ocean-button", style="width: 100%;") }}
         </form>
@@ -57,15 +64,7 @@
 </div>
 
 <script>
-    function showSection(sectionId) {
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('register-section').style.display = 'none';
-        document.getElementById('forgot-section').style.display = 'none';
-        document.getElementById(sectionId).style.display = 'block';
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        const initialSection = '{{ initial_section }}';     
-        showSection(initialSection + '-section');
-    });
+    document.body.dataset.initialSection = '{{ initial_section }}';
 </script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 {% endblock %}

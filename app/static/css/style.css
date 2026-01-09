@@ -21,9 +21,9 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
-        radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px),
-        radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+    background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
     background-size: 50px 50px, 80px 80px;
     background-position: 0 0, 40px 40px;
     animation: bubbleFloat 20s linear infinite;
@@ -32,8 +32,13 @@ body::before {
 }
 
 @keyframes bubbleFloat {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-100px); }
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(-100px);
+    }
 }
 
 /* Wave animation at bottom */
@@ -51,8 +56,13 @@ body::after {
 }
 
 @keyframes waveMove {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
 }
 
 /* Scrollbar Styling */
@@ -125,7 +135,7 @@ body::after {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
+    background-image:
         radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
         radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 40px 40px;
@@ -472,6 +482,7 @@ button:disabled {
         transform: translateX(-100%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -484,7 +495,8 @@ button:disabled {
     color: #a5d6a7;
 }
 
-.alert-error, .alert-danger {
+.alert-error,
+.alert-danger {
     background: linear-gradient(135deg, rgba(244, 67, 54, 0.3) 0%, rgba(211, 47, 47, 0.2) 100%);
     border-left-color: #f44336;
     color: #ef9a9a;
@@ -867,6 +879,7 @@ button:disabled {
         opacity: 0;
         transform: translateY(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -985,30 +998,49 @@ button:disabled {
 }
 
 @keyframes pityShimmer {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 /* Rarity Colors */
-.rarity.common, .creature-card.common .rarity-text {
+.rarity.common,
+.creature-card.common .rarity-text {
     color: #b0bec5;
 }
 
-.rarity.rare, .creature-card.rare .rarity-text {
+.rarity.rare,
+.creature-card.rare .rarity-text {
     color: #64b5f6;
 }
 
-.rarity.epic, .creature-card.epic .rarity-text {
+.rarity.epic,
+.creature-card.epic .rarity-text {
     color: #ba68c8;
 }
 
-.rarity.legendary, .creature-card.legendary .rarity-text {
+.rarity.legendary,
+.creature-card.legendary .rarity-text {
     color: #ffd700;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
@@ -1096,15 +1128,20 @@ button:disabled {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
-        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px),
-        repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px);
+    background-image:
+        repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.1) 10px, rgba(255, 255, 255, 0.1) 20px),
+        repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255, 255, 255, 0.05) 10px, rgba(255, 255, 255, 0.05) 20px);
     animation: patternMove 20s linear infinite;
 }
 
 @keyframes patternMove {
-    0% { background-position: 0 0, 0 0; }
-    100% { background-position: 100px 100px, -100px -100px; }
+    0% {
+        background-position: 0 0, 0 0;
+    }
+
+    100% {
+        background-position: 100px 100px, -100px -100px;
+    }
 }
 
 /* Shine effect on card back */
@@ -1114,13 +1151,18 @@ button:disabled {
     left: -50%;
     width: 200%;
     height: 200%;
-    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     animation: shine 3s infinite;
 }
 
 @keyframes shine {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
 }
 
 /* Question mark on card back */
@@ -1163,9 +1205,11 @@ button:disabled {
     0% {
         box-shadow: 0 0 0 rgba(79, 195, 247, 0);
     }
+
     50% {
         box-shadow: 0 0 40px rgba(79, 195, 247, 0.8);
     }
+
     100% {
         box-shadow: 0 0 20px rgba(79, 195, 247, 0.4);
     }
@@ -1189,23 +1233,51 @@ button:disabled {
 }
 
 @keyframes commonGlow {
-    0%, 100% { box-shadow: 0 0 20px rgba(176, 190, 197, 0.5); }
-    50% { box-shadow: 0 0 40px rgba(176, 190, 197, 1); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(176, 190, 197, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(176, 190, 197, 1);
+    }
 }
 
 @keyframes rareGlow {
-    0%, 100% { box-shadow: 0 0 20px rgba(100, 181, 246, 0.5); }
-    50% { box-shadow: 0 0 40px rgba(100, 181, 246, 1); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(100, 181, 246, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(100, 181, 246, 1);
+    }
 }
 
 @keyframes epicGlow {
-    0%, 100% { box-shadow: 0 0 20px rgba(186, 104, 200, 0.5); }
-    50% { box-shadow: 0 0 40px rgba(186, 104, 200, 1); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 20px rgba(186, 104, 200, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 40px rgba(186, 104, 200, 1);
+    }
 }
 
 @keyframes legendaryGlow {
-    0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); }
-    50% { box-shadow: 0 0 60px rgba(255, 215, 0, 1); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+    }
+
+    50% {
+        box-shadow: 0 0 60px rgba(255, 215, 0, 1);
+    }
 }
 
 /* Staggered card appearance for multi-pull */
@@ -1218,6 +1290,7 @@ button:disabled {
         opacity: 0;
         transform: scale(0.8) translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: scale(1) translateY(0);
@@ -1370,8 +1443,15 @@ button:disabled {
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
 }
 
 .empty-state h3 {
@@ -1482,8 +1562,13 @@ button:disabled {
 }
 
 @keyframes shimmer {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
+    }
 }
 
 .avatar-icon {
@@ -1823,7 +1908,7 @@ button:disabled {
     .creatures-grid {
         grid-template-columns: repeat(4, 1fr);
     }
-    
+
     .inventory-container .inventory-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     }
@@ -1833,17 +1918,17 @@ button:disabled {
     .creatures-grid {
         grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .home-content {
         grid-template-columns: 1fr;
         gap: 30px;
     }
-    
+
     .gacha-middle-row {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .gacha-info {
         width: 100%;
         max-width: 400px;
@@ -1854,20 +1939,20 @@ button:disabled {
     .profile-layout {
         grid-template-columns: 1fr;
     }
-    
+
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .creatures-grid {
         grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .stats-header {
         flex-wrap: wrap;
         justify-content: center;
     }
-    
+
     .stat-card {
         min-width: 120px;
     }
@@ -1877,31 +1962,31 @@ button:disabled {
     .sidebar {
         width: 200px;
     }
-    
+
     .creatures-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 15px;
     }
-    
+
     .stats-header {
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .flip-card-container:not(.mini) {
         width: 250px;
         height: 350px;
     }
-    
+
     .creature-card:not(.mini) {
         width: 250px;
     }
-    
+
     .inventory-container .inventory-grid {
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 15px;
     }
-    
+
     .inventory-container .creature-card {
         width: 180px;
         height: 280px;
@@ -1912,29 +1997,29 @@ button:disabled {
     .sidebar {
         width: 150px;
     }
-    
+
     .sidebar h2 {
         font-size: 18px;
         padding: 15px;
     }
-    
+
     .sidebar ul li a {
         font-size: 14px;
         padding: 10px 12px;
     }
-    
+
     .creatures-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .stats-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .inventory-container .inventory-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .gacha-button {
         padding: 12px 20px;
         font-size: 14px;
@@ -1963,6 +2048,7 @@ button:disabled {
 
 /* Print styles */
 @media print {
+
     .sidebar,
     .notification-container,
     .gacha-button,
@@ -1970,12 +2056,12 @@ button:disabled {
     #click-button {
         display: none;
     }
-    
+
     body::before,
     body::after {
         display: none;
     }
-    
+
     .main-content {
         padding: 0;
     }
@@ -2001,6 +2087,7 @@ button:disabled {
     width: 300px !important;
     height: 400px !important;
 }
+
 .flip-card {
     width: 100% !important;
     height: 100% !important;
@@ -2206,6 +2293,7 @@ button:disabled {
     font-size: 10px !important;
     margin: 3px 0 !important;
 }
+
 .inventory-container .inventory-grid {
     display: grid;
     grid-template-columns: repeat(5, 220px);
@@ -2301,4 +2389,91 @@ button:disabled {
     background: rgba(0, 61, 92, 0.95);
     color: #ffffff;
     padding: 10px;
+}
+
+/* ========================================
+   12. BANNER SELECTION STYLES
+   ======================================== */
+
+.banner-selection-container {
+    background: linear-gradient(135deg, rgba(0, 150, 199, 0.2) 0%, rgba(0, 188, 212, 0.15) 100%);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid rgba(79, 195, 247, 0.4);
+    box-shadow: 0 4px 15px rgba(79, 195, 247, 0.3);
+    margin-bottom: 20px;
+}
+
+.banner-selection-container h3 {
+    color: #80deea;
+    text-shadow: 0 3px 10px rgba(128, 222, 234, 0.5);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.banner-list {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.banner-list::-webkit-scrollbar {
+    height: 8px;
+}
+
+.banner-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #00acc1 0%, #0097a7 100%);
+    border-radius: 4px;
+}
+
+.banner-card {
+    min-width: 250px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%);
+    border: 2px solid rgba(79, 195, 247, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.banner-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(79, 195, 247, 0.3);
+    border-color: #4fc3f7;
+}
+
+.banner-card.selected {
+    background: linear-gradient(135deg, rgba(0, 172, 193, 0.4) 0%, rgba(0, 137, 123, 0.3) 100%);
+    border-color: #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    transform: scale(1.02);
+}
+
+.banner-title {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.banner-card.selected .banner-title {
+    color: #ffd700;
+}
+
+.banner-desc {
+    color: #b0e5f0;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.banner-date {
+    font-size: 11px;
+    color: #80deea;
+    font-style: italic;
+    margin-top: auto;
 }

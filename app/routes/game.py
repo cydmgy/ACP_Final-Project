@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify, session, redirect, url_for
 from app.database import db
-from app.models import User
+from app.models import User, Banner
 from app.services.user_service import UserService
 from app.services.gacha_service import GachaService
 from app.services.mission_service import MissionService
@@ -44,7 +44,7 @@ def handle_click():
     try:
         user.clicks += 1
         
-        # Every 5 clicks gives 1000 coins
+        # Every 5 clicks gives 1 coin
         if user.clicks % 5 == 0:
             user.coins += 1000
         
@@ -66,6 +66,7 @@ def handle_click():
         return jsonify({'error': str(e)}), 500
 
 
+
 @game_bp.route('/gacha')
 def gacha():
     """Gacha pull page."""
@@ -73,10 +74,16 @@ def gacha():
     if not user:
         return redirect(url_for('auth.auth_page'))
     
+    active_banners = Banner.query.filter_by(active=True).all()
+    
+    # Get standard banner pity stats by default
+    pity_record = GachaService.get_user_pity(user.user_id, None)
+    
     return render_template('gacha.html',
         coins=user.coins,
-        pity_counter=user.pity_counter,
-        legendary_pity=user.legendary_pity)
+        pity_counter=pity_record.pity_counter,
+        legendary_pity=pity_record.legendary_pity,
+        banners=active_banners)
 
 
 @game_bp.route('/pull_gacha', methods=['POST'])
@@ -89,11 +96,18 @@ def pull_gacha():
     try:
         data = request.get_json()
         pull_type = data.get('type', 'single')
+        banner_id = data.get('banner_id')
         
-        result = GachaService.pull_creature(user, pull_type)
+        # Validate banner_id (empty string -> None)
+        if not banner_id:
+            banner_id = None
+        
+        result = GachaService.pull_creature(user, pull_type, banner_id)
         return jsonify(result)
     except Exception as e:
         db.session.rollback()
+        # Log the error for debugging (print to console)
+        print(f"Gacha Error: {str(e)}")
         return jsonify({'success': False, 'message': str(e)}), 500
 
 
@@ -147,3 +161,23 @@ def update_time():
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+@game_bp.route('/get_pity')
+def get_pity():
+    """Get pity stats for a specific banner (or standard)"""
+    user = get_current_user()
+    if not user:
+        return jsonify({'success': False, 'message': 'Unauthorized'}), 401
+    
+    banner_id = request.args.get('banner_id')
+    # Treat empty string as None
+    if not banner_id:
+        banner_id = None
+    
+    pity_record = GachaService.get_user_pity(user.user_id, banner_id)
+    
+    return jsonify({
+        'success': True,
+        'pity_counter': pity_record.pity_counter,
+        'legendary_pity': pity_record.legendary_pity
+    })

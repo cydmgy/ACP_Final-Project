@@ -61,8 +61,19 @@ class UserAnnouncement(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'announcement_id': self.announcement_id,
+            'id': self.id,
+            'user_id': self.user_id,
+            'announcement_id': self.announcement_id,
             'read_at': self.read_at.isoformat() if self.read_at else None
         }
+
+class UserBannerPity(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=False)
+    banner_id = db.Column(db.Integer, db.ForeignKey('banner.banner_id'), nullable=True) # Null = Standard Banner
+    pity_counter = db.Column(db.Integer, default=0)
+    legendary_pity = db.Column(db.Integer, default=0)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Creature(db.Model):
     creature_id = db.Column(db.Integer, primary_key=True)
@@ -71,7 +82,8 @@ class Creature(db.Model):
     image = db.Column(db.String(100))
     probability = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(255))
-    active = db.Column(db.Boolean, default=True, nullable=False) 
+    active = db.Column(db.Boolean, default=True, nullable=False)
+    is_limited = db.Column(db.Boolean, default=False) # If True, only available in specific banners 
 
 class Mission(db.Model):
     mission_id = db.Column(db.Integer, primary_key=True)
@@ -96,3 +108,23 @@ class UserMission(db.Model):
     completed = db.Column(db.Boolean, default=False)
     completed_at = db.Column(db.DateTime)
     mission = db.relationship('Mission', backref='user_missions')
+
+class Banner(db.Model):
+    banner_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    image = db.Column(db.String(100)) # Banner promotional image
+    start_date = db.Column(db.DateTime, default=datetime.utcnow)
+    end_date = db.Column(db.DateTime, nullable=False)
+    active = db.Column(db.Boolean, default=True)
+    description = db.Column(db.String(255))
+    
+    # Relationship to featured creatures
+    featured_creatures = db.relationship('BannerCreature', backref='banner', lazy=True, cascade='all, delete-orphan')
+
+class BannerCreature(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    banner_id = db.Column(db.Integer, db.ForeignKey('banner.banner_id'), nullable=False)
+    creature_id = db.Column(db.Integer, db.ForeignKey('creature.creature_id'), nullable=False)
+    rate_multiplier = db.Column(db.Float, default=2.0) # Chance multiplier (e.g. 2x chance)
+    
+    creature = db.relationship('Creature')
