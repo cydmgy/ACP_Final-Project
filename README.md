@@ -83,7 +83,8 @@ project_root/
 
 ## Instructions
 1. Clone the repository:
-git clone -b refactor/project-structure https://github.com/cydmgy/ACP_Final-Project.git
+git clone https://github.com/cydmgy/ACP_Final-Project.git
+cd ACP_Final-Project
 
 2. Create and activate virtual environment:
 python -m venv venv
