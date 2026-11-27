@@ -80,7 +80,7 @@ body::before {
     z-index: 0;
 }
 
-@keyframes bubbleFloat {
+@keyframes bubbleFloat {    
     0% {
         transform: translateY(0);
     }
