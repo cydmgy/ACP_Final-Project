@@ -1,1 +1,4 @@
 data/sea_life_gacha.db
+
+__pycache__/
+*.pyc
