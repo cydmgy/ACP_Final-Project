@@ -94,10 +94,7 @@ venv\Scripts\activate      # Windows
 3. Install dependencies:
 pip install -r requirement.txt
 
-4. Seed the database:
-python seeds.py
-
-5. Run the app:
+4. Run the app (the database is created and seeded on first start):
 python run.py
 
 

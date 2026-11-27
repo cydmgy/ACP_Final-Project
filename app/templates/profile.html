@@ -8,9 +8,6 @@
         <!-- Left: Profile Info -->
         <div class="profile-card">
             <div class="avatar-display">
-                <div class="avatar-icon">
-                    {{ user.avatar.split('.')[0]|upper }}
-                </div>
                 <img
                     src="{{ url_for('static', filename='avatars/' ~ user.avatar) }}"
                     alt="Avatar"
