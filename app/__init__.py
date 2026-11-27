@@ -8,6 +8,7 @@ def create_app():
     
     # Database configuration
     basedir = os.path.abspath(os.path.dirname(__file__))
+    os.makedirs(os.path.join(os.path.dirname(basedir), 'data'), exist_ok=True)  # git doesn't keep the empty folder
     app.config['SQLALCHEMY_DATABASE_URI'] = \
         'sqlite:///' + os.path.join(os.path.dirname(basedir), 'data', 'sea_life_gacha.db')
     
