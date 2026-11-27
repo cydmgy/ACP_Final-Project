@@ -33,7 +33,7 @@ project_root/
 ├─ data/
 │  └─ sea_life_gacha.db  # SQLite database
 │
-├─ requirements.txt
+├─ requirement.txt
 ├─ run.py                # Application entry point
 ├─ seeds.py              # Database seed script
 └─ README.md
@@ -92,7 +92,7 @@ source venv/bin/activate   # macOS/Linux
 venv\Scripts\activate      # Windows
 
 3. Install dependencies:
-pip install -r requirements.txt
+pip install -r requirement.txt
 
 4. Seed the database:
 python seeds.py
